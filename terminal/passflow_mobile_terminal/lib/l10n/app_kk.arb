@@ -1,0 +1,325 @@
+{
+  "light": "Жарық",
+  "menu": "Мәзір",
+  "my_profile": "Менің профилім",
+  "route_change": "Маршруттағы өзгеріс",
+  "choose_route": "Маршрутты қайта таңдау",
+  "settings_notifications": "Баптаулар және хабарландырулар",
+  "terminalSettings": "Терминал баптаулары",
+  "help_support": "Көмек және қолдау",
+  "knowledge_base": "Білім қоры",
+  "report_error": "Қате туралы хабарлау",
+  "tech_support": "Қолданбаның тех. қолдауы",
+  "user_name": "Пайдаланушы аты",
+  "terminalSettingsTitle": "Терминал баптаулары",
+  "appLanguage": "Қолданба тілі",
+  "themeInterface": "Интерфейс тақырыбы",
+  "aboutAppTerminal": "Қолданба және терминал туралы",
+  "appVersion": "Қолданба нұсқасы: {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "logoutApp": "Қолданбадан шығу",
+  "logoutDialogTitle": "Қолданбадан шығасыз ба?",
+  "logoutDialogMessage": "Сіз шынымен қолданбадан шыққыңыз келе ме? Сессия аяқталады.",
+  "confirmLogout": "Шығу",
+  "chooseLanguage": "Тілді таңдаңыз",
+  "lang_ru": "Орысша",
+  "lang_kk": "Қазақша",
+  "done": "Дайын",
+  "dark": "Қараңғы",
+  "about_app": "Қолданба туралы",
+  "selectLanguage": "Қолданба тілін таңдаңыз",
+  "version": "Нұсқа",
+  "exit": "Шығу",
+  "home": "Басты бет",
+  "payment": "Төлем",
+  "services": "Қызметтер",
+  "boarding": "Отыру",
+  "train_number": "Пойыз нөмірі",
+  "wagon_number": "Вагон нөмірі",
+  "departure_time": "Жөнелту уақыты",
+  "arrival_time": "Келу уақыты",
+  "no_trains": "Пойыздар бойынша деректер жоқ",
+  "no_stations": "Деректерде станциялар жоқ",
+  "choose": "Таңдаңыз",
+  "ticket_status": "Билет мәртебесі",
+  "boarding_pass": "Отыру талоны",
+  "cancel_ticket": "Билетті болдырмау",
+  "confirm_ticket": "Билетті растау",
+  "notifications": "Хабарландырулар",
+  "profile_settings": "Профиль баптаулары",
+  "language": "Тіл",
+  "theme": "Тақырып",
+  "help": "Көмек",
+  "support": "Қолдау",
+  "taskRouteAppBarTitle": "Маршруттар",
+  "languageSelectedRussian": "Орыс тілі таңдалды",
+  "languageSelectedKazakh": "Қазақ тілі таңдалды",
+  "languageSelectedOther": "Таңдалған тіл: {lang}",
+  "@languageSelectedOther": {
+    "placeholders": {
+      "lang": {
+        "type": "Object"
+      }
+    }
+  },
+  "selectRouteTitle": "Маршрутты таңдаңыз",
+  "routeStatusNotApproved": "Толтырылмаған",
+  "routeStatusCurrent": "Ағымдағы",
+  "routeStatusApproved": "Толтырылған",
+  "routeDateTimeFormat": "{date} {time} бастап",
+  "@routeDateTimeFormat": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      },
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "profilePageTitle": "Менің профилім",
+  "changePhoto": "Фотосуретті өзгерту",
+  "iin": "ЖСН",
+  "tabNumber": "Табельдік нөмір",
+  "category": "Санат",
+  "position": "Лауазым",
+  "brigade": "Бригада",
+  "branch": "Филиал",
+  "email": "Email",
+  "phone": "Телефон",
+  "notificationInfo": "Көрсетілген телефон нөміріне және электронды мекенжайға\nсіз хабарламалар мен SMS-кодтар аласыз.",
+  "copy": "Көшіру",
+  "copied": "Көшірілді",
+  "edit": "Өңдеу",
+  "close": "Жабу",
+  "operation_success": "Операция орындалды",
+  "operation_error": "Қате: операция орындалмады",
+  "boarding_title": "Жолаушыларды отырғызу",
+  "preview_title": "Алдын ала қарау",
+  "print": "Басып шығару",
+  "printer_not_connected": "Принтер қосылмаған",
+  "printer_not_ready": "Принтер дайын емес: {status}",
+  "@printer_not_ready": {
+    "placeholders": {
+      "status": {
+        "type": "Object"
+      }
+    }
+  },
+  "sent_to_print": "Басып шығаруға жіберілді",
+  "print_error": "Басып шығару қатесі: {error}",
+  "@print_error": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "search_hint": "ЖСН немесе АТӘ",
+  "load_filter_tooltip": "Ағымдағы сүзгі бойынша деректерді жүктеу",
+  "segment_all": "Барлығы",
+  "segment_not_boarded": "Отырғызылмағандар",
+  "segment_boarded": "Отырғызылғандар",
+  "segment_disembarked": "Түскендер",
+  "dash_placeholder": "—",
+  "quick_board": "Отырғызу",
+  "no_data_export": "Экспортқа деректер жоқ",
+  "data_loaded_success": "Деректер сәтті жүктелді",
+  "data_loaded_error": "Қате: деректерді жүктеу мүмкін емес",
+  "filter_label": "Сүзгі",
+  "filter_tooltip": "Сүзгіні таңдау",
+  "wagon_tag": "# Вагон: №{wagon}",
+  "@wagon_tag": {
+    "placeholders": {
+      "wagon": {
+        "type": "Object"
+      }
+    }
+  },
+  "error": "Қате",
+  "load": "Жүктеу",
+  "station_tag": "# Станция: {station}",
+  "@station_tag": {
+    "placeholders": {
+      "station": {
+        "type": "Object"
+      }
+    }
+  },
+  "boarding_filterPrompt": "Отырғызу үшін фильтрден параметрлерді таңдаңыз",
+  "boarding_error_message": "Қате: {error}",
+  "@boarding_error_message": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "boarding_operation_success": "Операция орындалды",
+  "boarding_operation_error": "Қате: операция орындалмады",
+  "title": "Деректерді жүктеу үшін таңдау",
+  "reset_all": "Барлығын тастау",
+  "recent_requests": "Соңғы сұраулар",
+  "history_bullet": "•",
+  "departure_label": "Жөнелту {dep}",
+  "@departure_label": {
+    "placeholders": {
+      "dep": {
+        "type": "Object"
+      }
+    }
+  },
+  "request_label": "Сұрау {when}",
+  "@request_label": {
+    "placeholders": {
+      "when": {
+        "type": "Object"
+      }
+    }
+  },
+  "train_section": "Пойыз, күн және уақыт",
+  "station": "Станция",
+  "cancel": "Бас тарту",
+  "download": "Жүктеу",
+  "document": "Құжат",
+  "departure": "Жөнелту",
+  "arrival": "Келу",
+  "departure_date": "Жөнелту күні",
+  "departure_time": "Жөнелту уақыты",
+  "order_date": "Тіркеу күні",
+  "order_time": "Тіркеу уақыты",
+  "terminal": "Терминал",
+  "conductor": "Проводник",
+  "train_number_label": "Пойыз №",
+  "wagon_type": "Вагон түрі",
+  "wagon_number_label": "Вагон №",
+  "ticket_price": "Электрондық \nжолаушы құжатының құны",
+  "wish": "Жолдарыңыз болсын!",
+  "company_label": "«ҚТЖ» «ҰК» АҚ",
+  "discount": "Жеңілдік",
+  "full_name": "АТӘ",
+  "train_bar": "ПОЙЫЗ",
+  "arrival_date": "Келу күні",
+  "generated": "Қолданбада жасалды",
+  "boarded": "Отырғызылды",
+  "not_boarded": "Отырғызылмады",
+  "hello_name": "Сәлеметсіз бе{commaAndName}!",
+  "@hello_name": {
+    "description": "Қошемет. {commaAndName} — не бос, не \", <Есім>\"",
+    "placeholders": {
+      "commaAndName": {
+        "type": "String",
+        "example": ", Name"
+      }
+    }
+  },
+  "check_connection": "Қосылымды тексеру",
+  "offline_banner": "Интернетке қосылу жоқ. Оффлайн режим қолжетімді.",
+  "choose_action": "Әрекетті таңдаңыз",
+  "services_title": "Вагон бойынша сервистер",
+  "services_subtitle": "Вагон қабылдау, ЛУ-72, ВУ-8",
+  "boarding_card_title": "Жолаушыларды отырғызу",
+  "boarding_card_subtitle": "Ведомость, талондар, операциялар",
+  "payment_title": "Төлемді қабылдау",
+  "payment_subtitle": "Билеттер және басқа қызметтер",
+  "wagon_number_label_alt": "Вагон нөмірі:",
+  "status_label": "Мәртебе:",
+   "seat": "Орын",
+  "route_not_started": "Рейс басталмаған",
+  "route_started": "Рейсті бастау",
+  "appName": "passflow",
+  "appDescription": "Жолаушылар пойызының проводниктеріне арналған мобильді қосымша, жұмыс үдерістерін жеңілдету, тиімділікті арттыру және жолаушыларға қызмет көрсету сапасын жақсарту үшін жасалған.",
+  "privacyPolicy": "Құпиялылық саясаты",
+  "terminalInfo": "Терминал туралы ақпарат",
+  "terminal_title": "Терминал туралы",
+  "show_full": "Толығымен көрсету",
+  "hide": "Жасыру",
+  "info_section": "Ақпарат",
+  "ios_no_imei_title": "iOS IMEI бермейді",
+  "ios_no_imei_subtitle": "Apple құрылғыларында IMEI үшінші тарап қолданбаларына қолжетімсіз.",
+  "error_section": "Жаңарту қатесі",
+  "error_update_failed": "Деректерді жаңарту мүмкін болмады",
+  "error_update_retry": "Қайта байқап көріңіз. Егер қайталанса — рұқсаттарды тексеріңіз.",
+  "denied_section": "Телефон деректеріне қолжетім",
+  "denied_no_access_title": "Телефон деректеріне қолжетім жоқ",
+  "denied_no_access_subtitle": "IMEI көрсету үшін «Телефонға» рұқсат беріңіз.",
+  "denied_allow_access": "Қолжетімділікке рұқсат беру",
+  "denied_open_settings": "Баптауларды ашу",
+  "imei_unavailable_section": "IMEI қолжетімсіз",
+  "imei_device_section": "Құрылғының IMEI",
+  "imei_label": "IMEI {index}",
+  "@imei_label": {
+    "placeholders": {
+      "index": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "alt_id": "Альтернативті ID",
+  "alt_id_device": "Құрылғының альтернативті ID",
+  "tooltip_copy": "Көшіру",
+  "copied_imei": "IMEI көшірілді",
+  "copied_id": "ID көшірілді",
+  "copied": "Көшірілді",
+  "note_android10": "Ескерту: Android 10+ жүйесінде IMEI қайтарылмауы мүмкін",
+  "payment_accept": "Төлемді қабылдау",
+  "payment_history": "Төлем тарихы (2)",
+  "service_for_payment": "Төлемге арналған қызмет",
+  "payment_amount": "Төлем сомасы",
+  "choose_bank": "Банк таңдау",
+  "generate_qr_start_payment": "QR жасау / Төлемді бастау",
+  "history_payment_item": "Қызмет төлемі • 5 000 ₸",
+  "status_success": "Сәтті",
+  "status_cancel": "Бас тарту",
+  "choose_service": "Қызметті таңдаңыз",
+  "service_tea_coffee": "Шай / кофе",
+  "service_bedding": "Төсек-орын",
+  "service_extra_baggage": "Қосымша багаж",
+  "service_other": "Басқа",
+  "enter_amount_hint": "Соманы енгізіңіз, ₸",
+  "bank_kaspi": "Kaspi",
+  "bank_jusan": "Jusan",
+  "bank_halyk": "Halyk",
+  "bank_forte": "Forte",
+  "payment_started": "Төлем басталды: {service} • {amount} ₸ • {bank}",
+  "@payment_started": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "bank": {
+        "type": "String"
+      }
+    }
+  },
+  "clear": "Тазарту",
+  "today_time": "бүгін {time}",
+  "@today_time": {
+    "placeholders": {
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesterday_time": "кеше {time}",
+  "@yesterday_time": {
+    "placeholders": {
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "share": "Бөлісу",
+  "gender_male_short": "ер",
+  "gender_female_short": "әйел"
+}

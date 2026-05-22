@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_train"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:id="@+id/route_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Астана → Алматы через 5 часов 35 минут"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/route_eta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Явка через 5 ч 35 мин"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Маршрут начался"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:layout_marginBottom="8dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:progressDrawable="@drawable/progress_drawable"
+        android:progress="70"
+        android:max="100"
+        style="@android:style/Widget.ProgressBar.Horizontal" />
+</LinearLayout>

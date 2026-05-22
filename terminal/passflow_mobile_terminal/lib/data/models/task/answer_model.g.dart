@@ -1,0 +1,59 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'answer_model.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class AnswerModelAdapter extends TypeAdapter<AnswerModel> {
+  @override
+  final int typeId = 6;
+
+  @override
+  AnswerModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return AnswerModel(
+      id: fields[0] as int,
+      optionName: fields[1] as String,
+      value: fields[2] as String,
+      status: fields[3] as String?,
+      taskId: fields[4] as int?,
+      formId: fields[5] as int,
+      task: fields[6] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, AnswerModel obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.optionName)
+      ..writeByte(2)
+      ..write(obj.value)
+      ..writeByte(3)
+      ..write(obj.status)
+      ..writeByte(4)
+      ..write(obj.taskId)
+      ..writeByte(5)
+      ..write(obj.formId)
+      ..writeByte(6)
+      ..write(obj.task);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnswerModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

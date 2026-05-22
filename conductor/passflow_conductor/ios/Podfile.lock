@@ -1,0 +1,61 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_app_group_directory (0.0.1):
+    - Flutter
+  - flutter_foreground_task (0.0.1):
+    - Flutter
+  - live_activities (0.0.1):
+    - Flutter
+  - local_auth_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_app_group_directory (from `.symlinks/plugins/flutter_app_group_directory/ios`)
+  - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
+  - live_activities (from `.symlinks/plugins/live_activities/ios`)
+  - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_app_group_directory:
+    :path: ".symlinks/plugins/flutter_app_group_directory/ios"
+  flutter_foreground_task:
+    :path: ".symlinks/plugins/flutter_foreground_task/ios"
+  live_activities:
+    :path: ".symlinks/plugins/live_activities/ios"
+  local_auth_darwin:
+    :path: ".symlinks/plugins/local_auth_darwin/darwin"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_app_group_directory: d2c3337f424828558953172f9378d00df9b7756d
+  flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
+  live_activities: 5a5ddcfe2bd2cbbe7555a5da9c35b07d1a4ff2e8
+  local_auth_darwin: 66e40372f1c29f383a314c738c7446e2f7fdadc3
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+
+PODFILE CHECKSUM: 53297fc2e73906f4b43965feaa882c355218b414
+
+COCOAPODS: 1.16.2

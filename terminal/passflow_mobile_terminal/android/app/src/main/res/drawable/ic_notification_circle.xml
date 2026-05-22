@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+
+    <group>
+        <!-- Центр круга -->
+        <path
+            android:fillColor="#3F51B5"
+            android:pathData="M36,30 a6,6 0 1,0 0.01,0z" />
+        
+        <!-- Внешние кружки -->
+        <path android:fillColor="#3F51B5" android:pathData="M36,10 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M56,20 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M62,40 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M56,60 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M36,66 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M16,60 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M10,40 a6,6 0 1,0 0.01,0z" />
+        <path android:fillColor="#3F51B5" android:pathData="M16,20 a6,6 0 1,0 0.01,0z" />
+
+        <!-- Линии-связи (сегменты между центром и узлами) -->
+        <path android:strokeWidth="2"
+            android:strokeColor="#3F51B5"
+            android:fillColor="@android:color/transparent"
+            android:pathData="M36,30 L36,10
+                              M36,30 L56,20
+                              M36,30 L62,40
+                              M36,30 L56,60
+                              M36,30 L36,66
+                              M36,30 L16,60
+                              M36,30 L10,40
+                              M36,30 L16,20"/>
+    </group>
+</vector>

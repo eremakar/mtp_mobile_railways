@@ -1,0 +1,50 @@
+{
+  "form": {
+    "title": "Накладные на скобяные товары",
+    "instruction": "Тут инструктаж",
+    "tasks": [
+      {
+        "type": "text",
+        "label": "Description",
+        "name": "description",
+        "width_percent": 100,
+        "placeholder": "Some text goes here"
+      },
+      {
+        "type": "image",
+        "label": "Profile Image",
+        "name": "profile_image",
+        "placeholder": "image url goes here"
+      },
+      {
+        "type": "textfield",
+        "label": "First Name",
+        "name": "first_name",
+        "lines": 1,
+        "width_percent": 50,
+        "placeholder": "Enter your first name",
+        "validation": "regex"
+      },
+      {
+        "type": "checkbox",
+        "label": "I agree to the terms and conditions",
+        "name": "terms",
+        "width_percent": 100
+      },
+      {
+        "type": "select",
+        "label": "Country",
+        "name": "country",
+        "width_percent": 50,
+        "answeroptions": ["Kazakhstan", "Canada", "Germany", "Japan"]
+      },
+      {
+        "type": "radiobutton",
+        "label": "Gender",
+        "name": "gender",
+        "width_percent": 50,
+        "answeroptions": ["Male", "Female", "Other"]
+      }
+    ]
+  }
+}

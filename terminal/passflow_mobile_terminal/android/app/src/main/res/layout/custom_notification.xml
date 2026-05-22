@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notification_expanded"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_notification_rounded"
+    android:orientation="vertical"
+    android:padding="3dp">
+
+    <TextView
+        android:id="@+id/route_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Астана → Алматы через 5 часов 35 минут"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Маршрут начался"
+        android:textColor="#D0D0D0"
+        android:textSize="14sp"
+        android:layout_marginTop="6dp"/>
+
+    <TextView
+        android:id="@+id/route_eta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Явка через 5 ч 35 мин"
+        android:textColor="#CCCCCC"
+        android:textSize="13sp"
+        android:layout_marginTop="2dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_train"
+            android:tint="#FFFFFF"
+            android:layout_marginEnd="6dp" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_weight="1"
+            android:progressDrawable="@drawable/progress_drawable"
+            android:max="100"
+            android:progress="70" />
+    </LinearLayout>
+</LinearLayout>
+

@@ -1,0 +1,328 @@
+{
+  "light": "Светлая",
+  "menu": "Меню",
+  "my_profile": "Мой профиль",
+  "route_change": "Изменение в маршруте",
+  "choose_route": "Перевыбрать маршрут",
+  "settings_notifications": "Настройки и уведомления",
+  "terminalSettings": "Настройки терминала",
+  "help_support": "Помощь и поддержка",
+  "knowledge_base": "База знаний",
+  "report_error": "Сообщить об ошибке",
+  "tech_support": "Тех. поддержка приложения",
+  "user_name": "Имя пользователя",
+  "terminalSettingsTitle": "Настройки терминала",
+  "appLanguage": "Язык приложения",
+  "themeInterface": "Тема интерфейса",
+  "aboutAppTerminal": "О приложении и терминале",
+  "appVersion": "Версия приложения: {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "logoutApp": "Выйти из приложения",
+  "logoutDialogTitle": "Выйти из приложения?",
+  "logoutDialogMessage": "Вы действительно хотите выйти из приложения? Сессия будет завершена.",
+  "confirmLogout": "Выйти",
+  "chooseLanguage": "Выберите язык",
+  "lang_ru": "Русский",
+  "lang_kk": "Қазақша",
+  "done": "Готово",
+  "dark": "Тёмная",
+  "about_app": "О приложении",
+  "selectLanguage": "Выберите язык приложения",
+  "version": "Версия",
+  "exit": "Выход",
+  "home": "Главная",
+  "payment": "Оплата",
+  "services": "Сервисы",
+  "boarding": "Посадка",
+  "train_number": "Номер поезда",
+  "wagon_number": "Номер вагона",
+  "departure_time": "Время отправления",
+  "arrival_time": "Время прибытия",
+  "no_trains": "Нет данных по поездам",
+  "no_stations": "Нет станций в данных",
+  "choose": "Выберите",
+  "ticket_status": "Статус билета",
+  "boarding_pass": "Посадочный талон",
+  "cancel_ticket": "Отменить билет",
+  "confirm_ticket": "Подтвердить билет",
+  "notifications": "Уведомления",
+  "profile_settings": "Настройки профиля",
+  "language": "Язык",
+  "theme": "Тема",
+  "help": "Помощь",
+  "support": "Поддержка",
+  "taskRouteAppBarTitle": "Маршруты",
+  "languageSelectedRussian": "Русский язык выбран",
+  "languageSelectedKazakh": "Қазақ тілі таңдалды",
+  "languageSelectedOther": "Язык выбран: {lang}",
+  "@languageSelectedOther": {
+    "placeholders": {
+      "lang": {
+        "type": "Object"
+      }
+    }
+  },
+  "selectRouteTitle": "Выберите маршрут",
+  "routeStatusNotApproved": "Не заполнено",
+  "routeStatusCurrent": "Текущий",
+  "routeStatusApproved": "Заполнено",
+  "routeDateTimeFormat": "с {date} {time}",
+  "@routeDateTimeFormat": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      },
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "profilePageTitle": "Мой профиль",
+  "changePhoto": "Изменить фото",
+  "iin": "ИИН",
+  "tabNumber": "Табельный номер",
+  "category": "Категория",
+  "position": "Должность",
+  "brigade": "Бригада",
+  "branch": "Филиал",
+  "email": "Email",
+  "phone": "Телефон",
+  "notificationInfo": "На указанный номер телефона и электронный адрес\nВы будете получать уведомления и СМС-коды.",
+  "copy": "Копировать",
+  "copied": "Скопировано",
+  "edit": "Изменить",
+  "close": "Закрыть",
+  "operation_success": "Операция выполнена",
+  "operation_error": "Ошибка: операция не выполнена",
+  "boarding_title": "Посадка пассажиров",
+  "preview_title": "Предпросмотр",
+  "print": "Печать",
+  "printer_not_connected": "Принтер не подключён",
+  "printer_not_ready": "Принтер не готов: {status}",
+  "@printer_not_ready": {
+    "placeholders": {
+      "status": {
+        "type": "Object"
+      }
+    }
+  },
+  "sent_to_print": "Отправлено на печать",
+  "print_error": "Ошибка печати: {error}",
+  "@print_error": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "search_hint": "ИИН или ФИО",
+  "load_filter_tooltip": "Загрузить данные по текущему фильтру",
+  "segment_all": "Все",
+  "segment_not_boarded": "Не посажены",
+  "segment_boarded": "Посажены",
+  "segment_disembarked": "Высадки",
+  "dash_placeholder": "—",
+  "quick_board": "Посадить",
+  "no_data_export": "Нет данных для экспорта",
+  "data_loaded_success": "Данные успешно загружены",
+  "data_loaded_error": "Ошибка: не удалось загрузить данные",
+  "filter_label": "Фильтр",
+  "filter_tooltip": "Выбрать фильтр",
+  "wagon_tag": "# Вагон: №{wagon}",
+  "@wagon_tag": {
+    "placeholders": {
+      "wagon": {
+        "type": "Object"
+      }
+    }
+  },
+  "error": "Ошибка",
+  "load": "Загрузить",
+  "station_tag": "# Станция: {station}",
+  "@station_tag": {
+    "placeholders": {
+      "station": {
+        "type": "Object"
+      }
+    }
+  },
+  "boarding_filterPrompt": "Выберите в фильтре параметры для посадки",
+  "boarding_error_message": "Ошибка: {error}",
+  "@boarding_error_message": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "boarding_operation_success": "Операция выполнена",
+  "boarding_operation_error": "Ошибка: операция не выполнена",
+  "title": "Выбор данных для загрузки",
+  "reset_all": "Сбросить всё",
+  "recent_requests": "Недавние запросы",
+  "history_bullet": "•",
+  "departure_label": "Отправка {dep}",
+  "@departure_label": {
+    "placeholders": {
+      "dep": {
+        "type": "Object"
+      }
+    }
+  },
+  "request_label": "Запрос {when}",
+  "@request_label": {
+    "placeholders": {
+      "when": {
+        "type": "Object"
+      }
+    }
+  },
+  "train_section": "Поезд",
+  "station": "Станция",
+  "cancel": "Отмена",
+  "download": "Загрузить",
+  "document": "Документ",
+  "departure": "Отправление",
+  "arrival": "Прибытие",
+  "departure_date": "Дата отправления",
+  "departure_time": "Время отправления",
+  "order_date": "Дата регистрации",
+  "order_time": "Время регистрации",
+  "terminal": "Терминал",
+  "conductor": "Проводник",
+  "train_number_label": "Поезд №",
+  "wagon_type": "Тип вагона",
+  "wagon_number_label": "Вагон №",
+  "ticket_price": "Стоимость электронного \nпроездного документа",
+  "wish": "Счастливого пути!",
+  "company_label": "«КТЖ» «УК» АҚ",
+  "discount": "Дисконт",
+  "full_name": "ФИО",
+  "train_bar": "ПОЕЗД",
+  "arrival_date": "Дата прибытия",
+  "generated": "Сгенерировано в приложении",
+  "boarded": "Посажен",
+  "not_boarded": "Не посажен",
+  "hello_name": "Здравствуйте{commaAndName}!",
+  "@hello_name": {
+    "description": "Приветствие в шапке. {commaAndName} — либо пусто, либо \", <Имя>\"",
+    "placeholders": {
+      "commaAndName": {
+        "type": "String",
+        "example": ", Name"
+      }
+    }
+  },
+  "check_connection": "Проверить подключение",
+  "offline_banner": "Нет соединения с интернетом. Доступен оффлайн-режим.",
+  "choose_action": "Выберите действие",
+  "services_title": "Сервисы по вагону",
+  "services_subtitle": "Приемка вагона, ЛУ-72, ВУ-8",
+  "working_title": "Нормы часов и графики",
+  "reporting_title": "Время явки",
+  "boarding_card_title": "Посадка пассажиров",
+  "faceid_card_title": "Информация прохождения Face ID",
+  "boarding_card_subtitle": "Ведомость, талоны, операции",
+  "payment_title": "Прием оплаты",
+  "payment_subtitle": "Билеты и другие услуги",
+  "wagon_number_label_alt": "Номер вагона:",
+  "status_label": "Статус",
+  "seat": "Место",
+  "route_not_started": "Рейс не начат",
+  "route_started": "Старт рейса",
+  "appName": "passflow",
+  "appDescription": "Мобильное приложение для проводников пассажирских поездов, созданное для упрощения рабочих процессов, повышения эффективности и улучшения качества обслуживания пассажиров.",
+  "privacyPolicy": "Политика конфиденциальности",
+  "terminalInfo": "Информация о терминале",
+  "terminal_title": "Об Терминале",
+  "show_full": "Показать полностью",
+  "hide": "Скрыть",
+  "info_section": "Информация",
+  "ios_no_imei_title": "iOS не предоставляет IMEI",
+  "ios_no_imei_subtitle": "На устройствах Apple IMEI недоступен для сторонних приложений.",
+  "error_section": "Ошибка обновления",
+  "error_update_failed": "Не удалось обновить данные",
+  "error_update_retry": "Попробуйте ещё раз. Если повторится — проверьте разрешения.",
+  "denied_section": "Доступ к данным телефона",
+  "denied_no_access_title": "Нет доступа к телефонным данным",
+  "denied_no_access_subtitle": "Разрешите «Телефон» для показа IMEI.",
+  "denied_allow_access": "Разрешить доступ",
+  "denied_open_settings": "Открыть настройки",
+  "imei_unavailable_section": "IMEI недоступен",
+  "imei_device_section": "IMEI устройства",
+  "imei_label": "IMEI {index}",
+  "@imei_label": {
+    "placeholders": {
+      "index": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "alt_id": "Альтернативный ID",
+  "alt_id_device": "Альтернативный ID устройства",
+  "tooltip_copy": "Копировать",
+  "copied_imei": "IMEI скопирован",
+  "copied_id": "ID скопирован",
+  "copied": "Скопировано",
+  "note_android10": "Примечание: на Android 10+ система может не возвращать IMEI",
+  "payment_accept": "Прием оплаты",
+  "payment_history": "История оплаты (2)",
+  "service_for_payment": "Услуга для оплаты",
+  "payment_amount": "Сумма оплаты",
+  "choose_bank": "Выбрать банк",
+  "generate_qr_start_payment": "Сгенерировать QR / Начать оплату",
+  "history_payment_item": "Оплата услуги • 5 000 ₸",
+  "status_success": "Успешно",
+  "status_cancel": "Отмена",
+  "choose_service": "Выберите услугу",
+  "service_tea_coffee": "Чай / кофе",
+  "service_bedding": "Постельное бельё",
+  "service_extra_baggage": "Доп. багаж",
+  "service_other": "Другое",
+  "enter_amount_hint": "Введите сумму, ₸",
+  "bank_kaspi": "Kaspi",
+  "bank_jusan": "Jusan",
+  "bank_halyk": "Halyk",
+  "bank_forte": "Forte",
+  "payment_started": "Начата оплата: {service} • {amount} ₸ • {bank}",
+  "@payment_started": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "bank": {
+        "type": "String"
+      }
+    }
+  },
+  "clear": "Очистить",
+  "today_time": "сегодня {time}",
+  "@today_time": {
+    "placeholders": {
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesterday_time": "вчера {time}",
+  "@yesterday_time": {
+    "placeholders": {
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "share": "Поделиться",
+  "gender_male_short": "муж",
+  "gender_female_short": "жен"
+}

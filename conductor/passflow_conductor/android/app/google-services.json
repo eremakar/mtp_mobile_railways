@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "885748924037",
+    "project_id": "passflow-1efb8",
+    "storage_bucket": "passflow-1efb8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885748924037:android:a1e6358c678c50e437f3ec",
+        "android_client_info": {
+          "package_name": "com.example.fcode"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRwEKrCDeG4uXf4jM-Ae58Js13VtFNBjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885748924037:android:10f9d8af8377e10a37f3ec",
+        "android_client_info": {
+          "package_name": "com.example.Passflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRwEKrCDeG4uXf4jM-Ae58Js13VtFNBjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
