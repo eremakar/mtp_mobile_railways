@@ -33,7 +33,8 @@ migrate_working_dir/
 .packages
 .pub-cache/
 .pub/
-/build/d
+/build/
+/coverage/
 
 # Symbolication related
 app.*.symbols
@@ -45,3 +46,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+android/.gradle/
+android/local.properties
+android/captures/
+android/.cxx/
+
+# iOS generated
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Pods/
+ios/.symlinks/
