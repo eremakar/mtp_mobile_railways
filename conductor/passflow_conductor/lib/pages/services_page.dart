@@ -16,7 +16,7 @@ import 'package:passflow_app/pages/statistics_page.dart';
 import 'package:passflow_app/widgets/calc_widget.dart';
 import 'package:passflow_app/widgets/page/vu8/vu8_remarks.dart';
 
-class ServicesPage extends StatelessWidget {
+class ServicesPage extends StatefulWidget {
   const ServicesPage({
     super.key,
     this.onTapVacation,
@@ -25,6 +25,19 @@ class ServicesPage extends StatelessWidget {
 
   final VoidCallback? onTapVacation;
   final VoidCallback? onTapSickLeave;
+
+  @override
+  State<ServicesPage> createState() => _ServicesPageState();
+}
+
+class _ServicesPageState extends State<ServicesPage> {
+  late final Future<_ServicesLeadState> _leadStateFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _leadStateFuture = _loadLeadState();
+  }
 
   Future<_ServicesLeadState> _loadLeadState() async {
     final employeeId = Hive.box<UserModel>('userBox').get('currentUser')?.employeeId;
@@ -84,7 +97,7 @@ class ServicesPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
           child: FutureBuilder<_ServicesLeadState>(
-            future: _loadLeadState(),
+            future: _leadStateFuture,
             builder: (context, snapshot) {
               final leadState = snapshot.data ??
                   const _ServicesLeadState(
@@ -129,7 +142,7 @@ class ServicesPage extends StatelessWidget {
                 title: 'menu-vacation'.i18n(),
                 leading: Icon(CupertinoIcons.briefcase,
                     size: 26, color: Theme.of(context).iconTheme.color),
-                onTap: onTapVacation,
+                onTap: widget.onTapVacation,
               ),
               Divider(
                   height: 1,
@@ -139,7 +152,7 @@ class ServicesPage extends StatelessWidget {
                 title: 'menu-sick-leave'.i18n(),
                 leading: Icon(CupertinoIcons.bandage,
                     size: 26, color: Theme.of(context).iconTheme.color),
-                onTap: onTapSickLeave,
+                onTap: widget.onTapSickLeave,
               ),
               Divider(
                   height: 1,

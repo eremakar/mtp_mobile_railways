@@ -30,6 +30,7 @@ class RouteSheetBloc extends Bloc<RouteSheetEvent, RouteSheetState> {
 
         final result = await repository
             .searchByEmployeeId(user.get('currentUser')?.id ?? 0);
+        logger.i('result: $result');
 
         if (result != null && result.isNotEmpty) {
           // Очистим и сохраним маршруты

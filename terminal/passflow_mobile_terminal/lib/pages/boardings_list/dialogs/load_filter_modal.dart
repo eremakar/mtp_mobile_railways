@@ -81,6 +81,8 @@ class _LoadFilterModalState extends State<LoadFilterModal> {
       _allStations = const [];
     });
 
+    print('value: ${value?.toJson()}');
+
     _loadStationsForTrain(value);
   }
 
@@ -645,16 +647,17 @@ class _LoadFilterModalState extends State<LoadFilterModal> {
                           onPressed: canSubmit
                               ? () {
                                   final train = _selectedTrain!;
+                                  print('train: ${train.toJson()}');
                                   final trainTitle = _trainLabel(train);
-                                  final trainCode = train.code.isNotEmpty
-                                      ? train.code
-                                      : train.asuName;
+                                  final trainCode = train.asuName.isNotEmpty
+                                      ? train.asuName
+                                      : train.code;
 
                                   Navigator.of(context).pop(<String, dynamic>{
                                     'train': trainTitle,
                                     'trainModel': train,
                                     'trainCode': trainCode, // код (829А и т.п.)
-                                    'trainAsuName': train.asuName,
+                                    'trainAsuName': trainCode,
                                     'trainTitle': trainTitle, // строка для UI
                                     'routeClassId': train.routeClassId,
                                     'date': _selectedDate,

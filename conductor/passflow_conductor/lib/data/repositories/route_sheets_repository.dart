@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:passflow_app/core/cache/route_sheet_search_cache.dart';
 import 'package:passflow_app/core/dio/dio_client.dart';
 import 'package:passflow_app/data/models/route_sheets_models.dart';
 
@@ -157,6 +158,10 @@ class RouteSheetsRepository {
   Future<_SearchRawResult> _searchRawDetailed({
     required int employeeId,
   }) async {
+    final cacheKey = 'routeSheetEmployees.search:$employeeId';
+    final cached = RouteSheetSearchCache.get<_SearchRawResult>(cacheKey);
+    if (cached != null) return cached;
+
     final nowIso = DateTime.now().toUtc().toIso8601String();
     final body = {
       'query': '',
@@ -203,12 +208,14 @@ class RouteSheetsRepository {
           ? (data['result'] as List)
           : const <dynamic>[];
 
-      return _SearchRawResult(
+      final result = _SearchRawResult(
         items: list
           .whereType<Map>()
           .map((e) => Map<String, dynamic>.from(e))
           .toList(),
       );
+      RouteSheetSearchCache.set(cacheKey, result);
+      return result;
     } on DioException catch (e) {
       final code = e.response?.statusCode;
 

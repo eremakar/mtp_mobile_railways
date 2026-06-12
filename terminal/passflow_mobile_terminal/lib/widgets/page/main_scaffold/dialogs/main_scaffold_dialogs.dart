@@ -66,7 +66,7 @@ Future<void> _openSelectWagonNumberModel(
     if (kDebugMode) {
       u.wagonNumber = "Вагон не назначен";
       await u.save();
-      HiveService.initAllHive();
+      HiveService.initAllHive(force: true);
       onTap.call();
     }
     return;
@@ -81,7 +81,7 @@ Future<void> _openSelectWagonNumberModel(
 
   u.wagonNumber = selectedWagon;
   await u.save();
-  HiveService.initAllHive();
+  HiveService.initAllHive(force: true);
   // Если у вас есть глобальные goToTab/_currentIndex — вызов останется рабочим.
   // Иначе замените на вашу навигацию.
   onTap.call();

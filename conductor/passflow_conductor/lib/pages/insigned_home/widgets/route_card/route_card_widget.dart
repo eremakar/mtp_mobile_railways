@@ -2,22 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:passflow_app/data/repositories/route_sheets_repository.dart';
 import 'package:passflow_app/widgets/custom_loader.dart';
 
-class NextRouteCard extends StatelessWidget {
+class NextRouteCard extends StatefulWidget {
   final DateTime selectedMonth;
   final int employeeId;
 
-  final RouteSheetsRepository _repo = RouteSheetsRepository();
-
-   NextRouteCard({
+  const NextRouteCard({
     super.key,
     required this.selectedMonth,
     required this.employeeId,
   });
 
   @override
+  State<NextRouteCard> createState() => _NextRouteCardState();
+}
+
+class _NextRouteCardState extends State<NextRouteCard> {
+  final RouteSheetsRepository _repo = RouteSheetsRepository();
+  late final Future<RouteSheetBannerResult> _bannerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _bannerFuture = _repo.getNextOrCurrentRouteBannerResult(
+      employeeId: widget.employeeId,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<RouteSheetBannerResult>(
-      future: _repo.getNextOrCurrentRouteBannerResult(employeeId: employeeId),
+      future: _bannerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: DotCircleLoader());

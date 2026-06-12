@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:passflow_app/core/cache/route_sheet_search_cache.dart';
 import 'package:passflow_app/core/dio/dio_client.dart';
 import 'package:passflow_app/core/services/logger.dart';
 import 'package:passflow_app/data/models/routeSheetEmployees/route_sheet_employee_model.dart';
@@ -57,6 +58,12 @@ class RouteSheetEmployeesRepository {
     String? fromDate,
     String? toDate,
   }) async {
+    final cacheKey =
+        'searchEmployeeRouteSheets:$employeeId:$fromDate:$toDate';
+    final cached =
+        RouteSheetSearchCache.get<List<RouteSheetEmployeeModel>>(cacheKey);
+    if (cached != null) return cached;
+
     try {
       final response = await DioClient.dio
           .post('/routeSheets/api/v1/routeSheetEmployees/search',
@@ -67,7 +74,10 @@ class RouteSheetEmployeesRepository {
               }));
       if (response.statusCode == 200) {
         final List list = response.data['result'] as List;
-        return list.map((e) => RouteSheetEmployeeModel.fromJson(e)).toList();
+        final parsed =
+            list.map((e) => RouteSheetEmployeeModel.fromJson(e)).toList();
+        RouteSheetSearchCache.set(cacheKey, parsed);
+        return parsed;
       } else {
         logger.i('⚠️ Unexpected status code: ${response.statusCode}');
         return null;

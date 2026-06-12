@@ -39,7 +39,7 @@ Future<void> main() async {
 
       if (hasInterface) {
         if (await NetworkUtils.hasConnection()) {
-          await HiveService.initAllHive();
+          await HiveService.syncRouteSheetsFromApi();
         }
       }
     });

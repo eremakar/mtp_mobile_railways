@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:passflow_app/core/cache/route_sheet_search_cache.dart';
 import 'package:passflow_app/core/di/service_locator.dart';
 import 'package:passflow_app/data/models/boarding_model.dart';
 import 'package:passflow_app/data/models/class_station_model.dart';
@@ -23,7 +24,12 @@ import 'package:passflow_app/data/repositories/train_direction_repository.dart';
 import 'package:passflow_app/utils/network_utils.dart';
 
 class HiveService {
-  static Future<void> initAllHive() async {
+  static const _apiLoadMinInterval = Duration(minutes: 5);
+
+  static DateTime? _lastApiLoadAt;
+  static bool _loadInProgress = false;
+
+  static Future<void> initAllHive({bool force = false}) async {
     await Hive.initFlutter();
 
     await Future.wait([
@@ -42,10 +48,17 @@ class HiveService {
       Hive.openBox<List<ClassStationModel>>('loaded_stations'),
       Hive.openBox('deviceBox'),
     ]);
-    await _loadFromApiIfOnline();
+    await _loadFromApiIfOnline(force: force);
+  }
+
+  /// Повторная загрузка маршрутов с API (без переоткрытия Hive).
+  static Future<void> syncRouteSheetsFromApi({bool force = false}) async {
+    await _loadFromApiIfOnline(force: force);
   }
 
   static Future<void> clear() async {
+    _lastApiLoadAt = null;
+    RouteSheetSearchCache.invalidate();
     await Hive.box<RouteSheetModel>('routeSheets').clear();
     await Hive.box<TaskListTypeModel>('taskLists').clear();
     await Hive.box<TaskFormModel>('taskFormTypes').clear();
@@ -61,42 +74,53 @@ class HiveService {
     await Hive.box('deviceBox').clear();
   }
 
-  static Future<void> _loadFromApiIfOnline() async {
+  static Future<void> _loadFromApiIfOnline({bool force = false}) async {
+    if (!force &&
+        _lastApiLoadAt != null &&
+        DateTime.now().difference(_lastApiLoadAt!) < _apiLoadMinInterval) {
+      return;
+    }
+    if (_loadInProgress) return;
+    _loadInProgress = true;
+
     final userBox = Hive.box<UserModel>('userBox');
     final user = userBox.get('currentUser');
     if (user?.id == null) {
       print('❌ Не найден пользователь в userBox');
+      _loadInProgress = false;
       return;
     }
 
     final online = await NetworkUtils.hasConnection();
     if (!online) {
       print("📴 Нет интернета — пропускаем загрузку с API");
+      _loadInProgress = false;
       return;
     }
 
-    // Попробуем повторно отправить все локально сохранённые посадки
     try {
-      final ticketsRepo = sl<TicketsRepository>();
-      await ticketsRepo.resendAllPendingBoardings();
-    } catch (e) {
-      print('⚠️ Ошибка повторной отправки посадок: $e');
-    }
+      // Попробуем повторно отправить все локально сохранённые посадки
+      try {
+        final ticketsRepo = sl<TicketsRepository>();
+        await ticketsRepo.resendAllPendingBoardings();
+      } catch (e) {
+        print('⚠️ Ошибка повторной отправки посадок: $e');
+      }
 
-    final routeSheetRepo = sl<RouteSheetEmployeesRepository>();
+      final routeSheetRepo = sl<RouteSheetEmployeesRepository>();
 
-    // final userId = user!.id;
-    final userId = user!.employeeId;
-    final filialId = user!.filialId;
-    var sheets = await routeSheetRepo.searchByEmployeeId(userId);
+      final userId = user!.employeeId;
+      final filialId = user.filialId;
+      var sheets = await routeSheetRepo.searchByEmployeeId(userId);
 
-    if ((sheets == null || sheets.isEmpty) && filialId != null)
-      sheets = await routeSheetRepo.searchByFilialId(filialId);
+      if ((sheets == null || sheets.isEmpty) && filialId != null) {
+        sheets = await routeSheetRepo.searchByFilialId(filialId);
+      }
 
-    if (sheets == null || sheets.isEmpty) {
-      print('❌ Не удалось получить маршруты');
-      return;
-    }
+      if (sheets == null || sheets.isEmpty) {
+        print('❌ Не удалось получить маршруты');
+        return;
+      }
 
     // final taskListRepo = sl<TaskListTypeRepository>();
     // final taskFormRepo = sl<TaskFormRepository>();
@@ -107,14 +131,14 @@ class HiveService {
     // final taskFormBox = Hive.box<TaskFormModel>('taskFormTypes');
     // final formIdBox = Hive.box<PutTaskFormModel>('formId');
 
-    for (final sheet in sheets) {
+      for (final sheet in sheets) {
       // if (sheet.startStationName != null) {
       //   var stationCode =
       //       await stationsRepo.searchSspdStationCode(sheet.startStationName!);
       //   sheet.startStationCode = stationCode;
       // }
 
-      await routeSheetBox.put(sheet.id, sheet);
+        await routeSheetBox.put(sheet.id, sheet);
 
       // final taskListId = sheet.taskListTypeId;
       // final taskList = await taskListRepo.getById(taskListId);
@@ -164,8 +188,12 @@ class HiveService {
       //     }
       //   }
       // }
-    }
+      }
 
-    print("✅ Данные загружены в Hive: routeSheets, taskLists, taskForms");
+      _lastApiLoadAt = DateTime.now();
+      print("✅ Данные загружены в Hive: routeSheets, taskLists, taskForms");
+    } finally {
+      _loadInProgress = false;
+    }
   }
 }

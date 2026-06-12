@@ -68,7 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_name', userName);
 
-        await HiveService.initAllHive();
+        await HiveService.initAllHive(force: true);
 
         emit(AuthLoginSucceeded());
       } else if (response.statusCode == 401) {

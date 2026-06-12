@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:passflow_app/core/dio/api_log_interceptor.dart';
 import 'package:passflow_app/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -11,14 +13,17 @@ Future<List<String>> getSavedImeis() async {
 }
 
 class DioClient {
-  static final Dio dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://passflow.railways.kz:8443',
-      connectTimeout: 10000,
-      receiveTimeout: 10000,
-      headers: {'Content-Type': 'application/json'},
-    ),
-  )..interceptors.add(
+  static final Dio dio = () {
+    final client = Dio(
+      BaseOptions(
+        baseUrl: 'https://passflow.railways.kz:8443',
+        connectTimeout: 10000,
+        receiveTimeout: 10000,
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    client.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final prefs = await SharedPreferences.getInstance();
@@ -110,6 +115,13 @@ class DioClient {
         },
       ),
     );
+
+    if (kDebugMode) {
+      client.interceptors.add(ApiLogInterceptor());
+    }
+
+    return client;
+  }();
 
   /// Проверка наличия интернета простым GET-запросом
   static Future<bool> hasConnection() async {
