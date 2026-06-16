@@ -452,6 +452,13 @@ class AppLocalizationsKk extends AppLocalizations {
       'Интернетке қосылу жоқ. Оффлайн режим қолжетімді.';
 
   @override
+  String get offline_mode => 'Офлайн режим';
+
+  @override
+  String get offline_mode_active =>
+      'Деректер локалды сақталады, желіден шыққанда жіберіледі';
+
+  @override
   String get choose_action => 'Әрекетті таңдаңыз';
 
   @override

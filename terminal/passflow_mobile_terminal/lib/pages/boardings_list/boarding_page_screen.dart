@@ -96,7 +96,8 @@ class _BoardingPageScreenState extends State<BoardingPageScreen> {
               ok: ok,
               text: ok
                   ? AppLocalizations.of(context)!.operation_success
-                  : AppLocalizations.of(context)!.operation_error);
+                  : (state.boardingMessage ??
+                      AppLocalizations.of(context)!.operation_error));
           context.read<BoardingsListBloc>().add(ClearBoardingSuccessEvent());
         }
       },
@@ -929,6 +930,7 @@ class _BoardingPageScreenState extends State<BoardingPageScreen> {
     if (!mounted) return;
 
     final effective = returned;
+    if (effective == null) return;
     switch (effective) {
       case PassengerAction.boarding:
         bloc.add(RegisterBoardingEvent(row.ticket));

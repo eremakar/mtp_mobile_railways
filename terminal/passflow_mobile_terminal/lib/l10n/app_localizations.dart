@@ -932,6 +932,18 @@ abstract class AppLocalizations {
   /// **'Нет соединения с интернетом. Доступен оффлайн-режим.'**
   String get offline_banner;
 
+  /// No description provided for @offline_mode.
+  ///
+  /// In ru, this message translates to:
+  /// **'Офлайн режим'**
+  String get offline_mode;
+
+  /// No description provided for @offline_mode_active.
+  ///
+  /// In ru, this message translates to:
+  /// **'Данные сохраняются локально и отправятся при выходе из офлайн-режима'**
+  String get offline_mode_active;
+
   /// No description provided for @choose_action.
   ///
   /// In ru, this message translates to:

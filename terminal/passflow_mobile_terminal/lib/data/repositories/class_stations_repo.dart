@@ -5,11 +5,32 @@ import 'package:passflow_app/data/models/class_station_model.dart';
 import 'package:passflow_app/data/models/name_id.pair_model.dart';
 import 'package:passflow_app/data/models/ticket_model.dart';
 import 'package:passflow_app/services/logger.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 
 class StationsRepo {
+  Box<String> get _stationCodesBox => Hive.box<String>('station_codes');
+
+  String _stationCodeKey(String stationName) =>
+      stationName.trim().toLowerCase();
+
+  Future<void> _cacheStationCodes(List<ClassStationModel> stations) async {
+    for (final station in stations) {
+      final code = station.code?.trim();
+      if (code != null && code.isNotEmpty) {
+        await _stationCodesBox.put(_stationCodeKey(station.name), code);
+      }
+    }
+  }
+
   /// Получить список названий станций посадки по classId
   Future<List<ClassStationModel>> getStationNamesByClassId(int classId) async {
     final stationsBox = Hive.box<List<ClassStationModel>>('loaded_stations');
+    final cached = stationsBox.get(classId) ?? const <ClassStationModel>[];
+    final hasNet = await NetworkUtils.isNetworkAvailable();
+    if (!hasNet) {
+      return cached;
+    }
+
     try {
       final filter = {
         "filter": {
@@ -38,11 +59,22 @@ class StationsRepo {
               return ao.compareTo(bo);
             });
 
-      // маппим как раньше
-      var stations =
-          sorted.map((m) => ClassStationModel.fromJson(m['station'])).toList();
+      // маппим как раньше; код ССПД может быть в station или на уровне записи
+      var stations = sorted.map((m) {
+        final stationJson = Map<String, dynamic>.from(m['station'] as Map);
+        final nestedCode = stationJson['code']?.toString();
+        final rowCode = m['code']?.toString();
+        final code = (nestedCode != null && nestedCode.isNotEmpty)
+            ? nestedCode
+            : rowCode;
+        if (code != null && code.isNotEmpty) {
+          stationJson['code'] = code;
+        }
+        return ClassStationModel.fromJson(stationJson);
+      }).toList();
 
       await stationsBox.put(classId, stations);
+      await _cacheStationCodes(stations);
       return stations;
     } catch (e, s) {
       logger.e('❌ Ошибка загрузки станций посадки: $e\n$s');
@@ -90,6 +122,11 @@ class StationsRepo {
   }
 
   Future<String?> searchSspdStationCode(String stationName) async {
+    final cached = _stationCodesBox.get(_stationCodeKey(stationName));
+    if (cached != null && cached.isNotEmpty) {
+      return cached;
+    }
+
     try {
       final response = await DioClient.dio.post(
         '/api/v1/stations/search',
@@ -100,13 +137,19 @@ class StationsRepo {
         }),
       );
       if (response.statusCode == 200) {
-        return (response.data['result'] as List)
-            .firstWhere((item) => item['code'] != null)?['code'];
+        final code = (response.data['result'] as List)
+            .cast<Map>()
+            .map((item) => item['code']?.toString())
+            .firstWhere((c) => c != null && c.isNotEmpty, orElse: () => null);
+        if (code != null && code.isNotEmpty) {
+          await _stationCodesBox.put(_stationCodeKey(stationName), code);
+        }
+        return code;
       }
-      return null;
+      return cached;
     } catch (e) {
       print('❌ Ошибка загрузки билетов: $e');
-      return null;
+      return cached;
     }
   }
 }

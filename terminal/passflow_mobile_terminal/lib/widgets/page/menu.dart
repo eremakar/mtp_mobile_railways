@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:passflow_app/auth/logout_flow.dart';
 import 'package:passflow_app/l10n/app_localizations.dart';
 import 'package:passflow_app/widgets/page/profile.dart';
 import 'package:passflow_app/widgets/page/settings.dart';
@@ -158,6 +159,20 @@ class _MenuPageState extends State<MenuPage> {
                 onTap: widget.onTapSupport,
               ),
             ]),
+            const SizedBox(height: 16),
+            _MenuCard(items: [
+              _MenuItem(
+                title: l10n.confirmLogout,
+                leading: const Icon(
+                  Icons.logout,
+                  size: 24,
+                  color: Color(0xFFDC2626),
+                ),
+                titleColor: const Color(0xFFDC2626),
+                showChevron: false,
+                onTap: () => confirmAndLogout(context),
+              ),
+            ]),
           ],
         ),
       ),
@@ -224,15 +239,18 @@ class _MenuItem extends StatelessWidget {
     required this.title,
     required this.leading,
     this.onTap,
+    this.titleColor,
+    this.showChevron = true,
   });
 
   final String title;
   final Widget leading;
   final VoidCallback? onTap;
+  final Color? titleColor;
+  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -245,14 +263,15 @@ class _MenuItem extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF111827),
+                  color: titleColor ?? const Color(0xFF111827),
                 ),
               ),
             ),
-            const Icon(CupertinoIcons.right_chevron, color: Color(0xFF9CA3AF)),
+            if (showChevron)
+              const Icon(CupertinoIcons.right_chevron, color: Color(0xFF9CA3AF)),
           ],
         ),
       ),

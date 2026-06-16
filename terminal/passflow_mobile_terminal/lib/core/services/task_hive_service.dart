@@ -46,6 +46,7 @@ class HiveService {
       Hive.openBox('tickets_cache'),
       Hive.openBox<TrainDirectionsResponse>('train_directions'),
       Hive.openBox<List<ClassStationModel>>('loaded_stations'),
+      Hive.openBox<String>('station_codes'),
       Hive.openBox('deviceBox'),
     ]);
     await _loadFromApiIfOnline(force: force);
@@ -71,6 +72,7 @@ class HiveService {
     await Hive.box('tickets_cache').clear();
     await Hive.box<TrainDirectionsResponse>('train_directions').clear();
     await Hive.box<List<ClassStationModel>>('loaded_stations').clear();
+    await Hive.box<String>('station_codes').clear();
     await Hive.box('deviceBox').clear();
   }
 
@@ -91,7 +93,7 @@ class HiveService {
       return;
     }
 
-    final online = await NetworkUtils.hasConnection();
+    final online = await NetworkUtils.isNetworkAvailable();
     if (!online) {
       print("📴 Нет интернета — пропускаем загрузку с API");
       _loadInProgress = false;
@@ -117,8 +119,17 @@ class HiveService {
         sheets = await routeSheetRepo.searchByFilialId(filialId);
       }
 
-      if (sheets == null || sheets.isEmpty) {
+      if (sheets == null) {
         print('❌ Не удалось получить маршруты');
+        return;
+      }
+
+      final routeSheetBox = Hive.box<RouteSheetModel>('routeSheets');
+      await routeSheetBox.clear();
+
+      if (sheets.isEmpty) {
+        print('ℹ️ Маршрутов нет — кэш очищен');
+        _lastApiLoadAt = DateTime.now();
         return;
       }
 
@@ -126,7 +137,6 @@ class HiveService {
     // final taskFormRepo = sl<TaskFormRepository>();
     // final stationsRepo = sl<StationsRepo>();
 
-    final routeSheetBox = Hive.box<RouteSheetModel>('routeSheets');
     // final taskListBox = Hive.box<TaskListTypeModel>('taskLists');
     // final taskFormBox = Hive.box<TaskFormModel>('taskFormTypes');
     // final formIdBox = Hive.box<PutTaskFormModel>('formId');

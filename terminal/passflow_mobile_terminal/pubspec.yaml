@@ -1,10 +1,10 @@
 name: passflow_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.4+3
+version: 1.0.5+4
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:

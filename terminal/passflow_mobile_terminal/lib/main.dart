@@ -24,6 +24,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
+  await NetworkUtils.loadOfflineMode();
 
   await HiveService.initAllHive();
   await loadAndSaveImeis();
@@ -38,7 +39,7 @@ Future<void> main() async {
           r == ConnectivityResult.other);
 
       if (hasInterface) {
-        if (await NetworkUtils.hasConnection()) {
+        if (await NetworkUtils.isNetworkAvailable()) {
           await HiveService.syncRouteSheetsFromApi();
         }
       }

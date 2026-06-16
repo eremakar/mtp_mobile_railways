@@ -37,20 +37,21 @@ class RouteSheetBloc extends Bloc<RouteSheetEvent, RouteSheetState> {
         final result = await repository
             .searchByEmployeeId(user.get('currentUser')?.employeeId ?? 0);
 
-        if (result != null && result.isNotEmpty) {
-          // Очистим и сохраним маршруты
+        if (result != null) {
           await hiveBox.clear();
-          for (var sheet in result) {
-            await hiveBox.put(sheet.id, sheet);
-          }
 
-          // Загрузим связанные TaskListTypeModel по taskListTypeId
-          for (final sheet in result) {
-            final taskListTypeId = sheet.taskListTypeId;
-            if (!taskBox.containsKey(taskListTypeId)) {
-              final form = await taskRepo.getById(taskListTypeId);
-              if (form != null) {
-                await taskBox.put(taskListTypeId, form);
+          if (result.isNotEmpty) {
+            for (var sheet in result) {
+              await hiveBox.put(sheet.id, sheet);
+            }
+
+            for (final sheet in result) {
+              final taskListTypeId = sheet.taskListTypeId;
+              if (!taskBox.containsKey(taskListTypeId)) {
+                final form = await taskRepo.getById(taskListTypeId);
+                if (form != null) {
+                  await taskBox.put(taskListTypeId, form);
+                }
               }
             }
           }
@@ -59,7 +60,7 @@ class RouteSheetBloc extends Bloc<RouteSheetEvent, RouteSheetState> {
           return;
         }
 
-        // офлайн — берём маршруты из кэша
+        // ошибка сети — берём маршруты из Hive
         final cached = hiveBox.values.toList();
         if (cached.isNotEmpty) {
           emit(RouteSheetLoaded(cached));

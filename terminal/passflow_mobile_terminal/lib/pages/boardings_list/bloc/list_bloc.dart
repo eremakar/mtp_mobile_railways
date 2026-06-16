@@ -12,11 +12,13 @@ import 'package:passflow_app/data/models/route_sheet_model.dart';
 import 'package:passflow_app/data/models/ticket_model.dart';
 import 'package:passflow_app/data/models/tickets_search_entry_model.dart';
 import 'package:passflow_app/data/models/train_direction_model.dart';
+import 'package:passflow_app/data/models/train_directions_response.dart';
 import 'package:passflow_app/data/models/user_model.dart';
 import 'package:passflow_app/data/repositories/class_stations_repo.dart';
 import 'package:passflow_app/data/repositories/tickets_repository.dart';
 import 'package:passflow_app/data/repositories/train_direction_repository.dart';
 import 'package:passflow_app/utils/network_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'list_event.dart';
 import 'list_state.dart';
@@ -44,6 +46,7 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
   final cacheBox = Hive.box('tickets_cache'); // key -> List<TicketModel>
 
   StreamSubscription? _ticketsSub;
+  String? _currentCacheKey;
 
   BoardingsListBloc() : super(const BoardingsListState()) {
     // Подписка на Hive-бокс с билетами
@@ -113,6 +116,83 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     await cacheBox.put(key, tickets);
   }
 
+  List<TicketModel>? _readTicketsFromCache(String? key) {
+    if (key == null || !cacheBox.containsKey(key)) return null;
+    final raw = cacheBox.get(key);
+    if (raw is! List) return null;
+    return raw.cast<TicketModel>();
+  }
+
+  Future<List<TicketModel>> _restoreCachedTickets({String? preferredKey}) async {
+    final key = preferredKey ??
+        _currentCacheKey ??
+        (_readHistory().isNotEmpty ? _readHistory().first.key : null);
+    final cached = _readTicketsFromCache(key);
+    if (cached == null || cached.isEmpty) {
+      return ticketsBox.values.toList(growable: false);
+    }
+
+    _currentCacheKey = key;
+    final merged = _mergeWithLocal(cached);
+    await ticketsBox.clear();
+    await ticketsBox.putAll({for (final e in merged) e.orderNumber: e});
+    return merged;
+  }
+
+  Future<List<TicketModel>> _restoreBestCachedTickets() async {
+    final history = _readHistory();
+    for (final entry in history) {
+      final cached = _readTicketsFromCache(entry.key);
+      if (cached != null && cached.isNotEmpty) {
+        return _restoreCachedTickets(preferredKey: entry.key);
+      }
+    }
+    if (history.isNotEmpty) {
+      return _restoreCachedTickets(preferredKey: history.first.key);
+    }
+    return ticketsBox.values.toList(growable: false);
+  }
+
+  Future<int> _resolveFilialId() async {
+    final currentUser = userBox.get('currentUser');
+    final fromUser = currentUser?.filialId;
+    if (fromUser != null && fromUser > 0) return fromUser;
+
+    final directionsBox =
+        Hive.box<TrainDirectionsResponse>('train_directions');
+    for (final key in directionsBox.keys) {
+      if (key is int && key > 0) return key;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final fromPrefs = prefs.getInt('last_filial_id');
+    if (fromPrefs != null && fromPrefs > 0) return fromPrefs;
+
+    return 0;
+  }
+
+  Future<void> _syncCurrentCache(List<TicketModel> tickets) async {
+    if (_currentCacheKey == null || tickets.isEmpty) return;
+    await cacheBox.put(_currentCacheKey, tickets);
+  }
+
+  Future<void> _ensureTicketsWatch() async {
+    if (_ticketsSub != null) return;
+    _ticketsSub = ticketsBox.watch().listen((_) {
+      final current = ticketsBox.values.toList(growable: false);
+      add(_TicketsBoxUpdated(current));
+    });
+  }
+
+  Future<TicketModel?> _fetchSavedTicketIfOnline(String orderNumber) async {
+    if (!await NetworkUtils.isNetworkAvailable()) return null;
+    try {
+      return await repository.searchTicketsByOrderNumber(orderNumber);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Сливает входящие билеты с локальными (из ticketsBox),
   /// чтобы сохранить boardingPassed/isSendToServer и прочие локальные флаги.
   List<TicketModel> _mergeWithLocal(List<TicketModel> incoming) {
@@ -143,50 +223,57 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     final s = state as BoardingsListState;
 
     emit(s.copyWith(isLoading: true, error: null));
-    final currentUser = userBox.get('currentUser');
     try {
-      // final currentRouteSheet = routeSheetBox.get(user?.routeSheetId);
+      final filialId = await _resolveFilialId();
+      final trainDirections =
+          await trainDirectionsRepository.searchByFilial(filialId: filialId);
 
-      // if (user?.id == null) {
-      //   emit(s.copyWith(isLoading: false, error: 'Нет текущего пользователя'));
-      //   return;
-      // }
-      // if (currentRouteSheet == null) {
-      //   emit(s.copyWith(isLoading: false, error: 'Нет маршрутного листа'));
-      //   return;
-      // }
+      final history = _readHistory();
+      var tickets = ticketsBox.values.toList(growable: false);
 
-      final trainDirections = await trainDirectionsRepository.searchByFilial(
-          filialId: currentUser?.filialId ?? 0);
-
-      if (trainDirections == null || trainDirections.result.isEmpty) {
-        emit(s.copyWith(
-          isLoading: false,
-          error: 'Нет данных по направлениям',
-        ));
-        return;
+      if (tickets.isEmpty) {
+        tickets = await _restoreBestCachedTickets();
+      } else if (history.isNotEmpty) {
+        _currentCacheKey ??= history.first.key;
       }
 
-      // final startTime = currentRouteSheet.routeSheetDate != null
-      //     ? DateFormat('dd.MM.yyyy HH:mm')
-      //         .format(currentRouteSheet.routeSheetDate!)
-      //     : '';
+      await _ensureTicketsWatch();
 
-      // final trainNumbers = currentRouteSheet.directions
-      //     ?.map((e) =>
-      //         '${e.trainDirection?.fullName} - ${e.startDate != null ? DateFormat('dd.MM.yyyy').format(e.startDate) : ''}')
-      //     .toSet()
-      //     .toList();
+      final directions = trainDirections?.result;
+      final hasDirections = directions != null && directions.isNotEmpty;
+      final hasTickets = tickets.isNotEmpty;
+      final hasHistory = history.isNotEmpty;
+
+      String? error;
+      if (!hasTickets && !hasDirections && !hasHistory) {
+        error = 'Нет данных по направлениям';
+      }
 
       emit(s.copyWith(
         isLoading: false,
-        // stations: stations,
-        trainDirections: trainDirections.result,
-        // startTime: startTime,
-        history: _readHistory(), // сразу поднимем историю в стейт
+        trainDirections: directions,
+        history: history,
+        tickets: tickets,
+        offset: tickets.length,
+        hasMore: false,
+        error: error,
       ));
     } catch (e) {
-      emit(s.copyWith(isLoading: false, error: e.toString()));
+      final restored = await _restoreBestCachedTickets();
+      final directions =
+          (await trainDirectionsRepository.searchByFilial(filialId: await _resolveFilialId()))
+              ?.result;
+      emit(s.copyWith(
+        isLoading: false,
+        trainDirections: directions,
+        tickets: restored,
+        offset: restored.length,
+        hasMore: false,
+        history: _readHistory(),
+        error: restored.isEmpty && (directions == null || directions.isEmpty)
+            ? e.toString()
+            : null,
+      ));
     }
   }
 
@@ -234,6 +321,7 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
       isLoading: false,
       // boardingSuccess оставляем как есть
     ));
+    unawaited(_syncCurrentCache(event.tickets));
   }
 
   // -------------- Backend ops (оптимистично) --------------
@@ -243,57 +331,48 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     Emitter<BoardingsState> emit,
   ) async {
     if (state is! BoardingsListState) return;
+    final cur = state as BoardingsListState;
 
-    // 1) Оптимистично обновляем Hive
-    final t0 = ticketsBox.get(event.model.orderNumber);
-    if (t0 != null) {
-      await ticketsBox.put(
-        event.model.orderNumber,
-        t0.copyWith(boardingPassed: true, isSendToServer: false),
-      );
-    }
-
-    // 2) Снимаем локальные флаги отказ/высадка
-    final cur1 = state as BoardingsListState;
-    final refused1 = Set<String>.from(cur1.refusedTicketIds)
-      ..remove(event.model.orderNumber);
-    final disemb1 = Set<String>.from(cur1.disembarkedTicketIds)
-      ..remove(event.model.orderNumber);
-    emit(cur1.copyWith(
-      refusedTicketIds: refused1,
-      disembarkedTicketIds: disemb1,
-    ));
-
-    // 3) Отправляем на сервер; обновляем флаг sync
     try {
+      final hasNet = await NetworkUtils.isNetworkAvailable();
       final boardingResult = await repository.registerBoarding(event.model);
       final savedModel =
-          await repository.searchTicketsByOrderNumber(event.model.orderNumber);
+          await _fetchSavedTicketIfOnline(event.model.orderNumber);
+      final t0 = ticketsBox.get(event.model.orderNumber);
 
-      final t1 = ticketsBox.get(event.model.orderNumber);
+      if (boardingResult.success) {
+        if (t0 != null) {
+          final base = savedModel ?? t0;
+          await ticketsBox.put(
+            event.model.orderNumber,
+            base.copyWith(boardingPassed: true, isSendToServer: hasNet),
+          );
+        }
 
-      if (t1 != null) {
-        // Берем приоритетно модель, пришедшую с сервера, иначе — локальную
-        final base = savedModel ?? t1;
+        final refused1 = Set<String>.from(cur.refusedTicketIds)
+          ..remove(event.model.orderNumber);
+        final disemb1 = Set<String>.from(cur.disembarkedTicketIds)
+          ..remove(event.model.orderNumber);
 
-        final updated = base.copyWith(
-          isSendToServer: boardingResult.success,
-        );
-
-        await ticketsBox.put(event.model.orderNumber, updated);
+        emit(cur.copyWith(
+          boardingSuccess: true,
+          clearBoardingMessage: true,
+          refusedTicketIds: refused1,
+          disembarkedTicketIds: disemb1,
+          tickets: ticketsBox.values.toList(),
+        ));
+      } else {
+        emit(cur.copyWith(
+          boardingSuccess: false,
+          boardingMessage: boardingResult.message,
+          tickets: ticketsBox.values.toList(),
+        ));
       }
-
-      final cur2 = state as BoardingsListState;
-      emit(cur2.copyWith(
-        boardingSuccess: boardingResult.success,
-        error: boardingResult.message,
-        tickets: ticketsBox.values.toList(),
-      ));
     } catch (e) {
       final curErr = state as BoardingsListState;
       emit(curErr.copyWith(
-        error: e.toString(),
         boardingSuccess: false,
+        boardingMessage: e.toString(),
         tickets: ticketsBox.values.toList(),
       ));
     }
@@ -304,54 +383,48 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     Emitter<BoardingsState> emit,
   ) async {
     if (state is! BoardingsListState) return;
+    final cur = state as BoardingsListState;
 
-    // 1) Оптимистично: снять посадку
-    final t0 = ticketsBox.get(event.model.orderNumber);
-    if (t0 != null) {
-      await ticketsBox.put(
-        event.model.orderNumber,
-        t0.copyWith(boardingPassed: false, isSendToServer: false),
-      );
-    }
-
-    // 2) Локальные наборы
-    final cur1 = state as BoardingsListState;
-    final disemb1 = Set<String>.from(cur1.disembarkedTicketIds)
-      ..add(event.model.orderNumber);
-    final refused1 = Set<String>.from(cur1.refusedTicketIds)
-      ..remove(event.model.orderNumber);
-    emit(cur1.copyWith(
-      disembarkedTicketIds: disemb1,
-      refusedTicketIds: refused1,
-    ));
-
-    // 3) Бэк → флаг sync
     try {
+      final hasNet = await NetworkUtils.isNetworkAvailable();
       final boardingResult = await repository.cancelBoarding(event.model);
       final savedModel =
-          await repository.searchTicketsByOrderNumber(event.model.orderNumber);
+          await _fetchSavedTicketIfOnline(event.model.orderNumber);
+      final t0 = ticketsBox.get(event.model.orderNumber);
 
-      final t1 = ticketsBox.get(event.model.orderNumber);
+      if (boardingResult.success) {
+        if (t0 != null) {
+          final base = savedModel ?? t0;
+          await ticketsBox.put(
+            event.model.orderNumber,
+            base.copyWith(boardingPassed: false, isSendToServer: hasNet),
+          );
+        }
 
-      if (t1 != null) {
-        final base = savedModel ?? t1;
-        final updated = base.copyWith(
-          isSendToServer: boardingResult.success,
-        );
-        await ticketsBox.put(event.model.orderNumber, updated);
+        final disemb1 = Set<String>.from(cur.disembarkedTicketIds)
+          ..add(event.model.orderNumber);
+        final refused1 = Set<String>.from(cur.refusedTicketIds)
+          ..remove(event.model.orderNumber);
+
+        emit(cur.copyWith(
+          boardingSuccess: true,
+          clearBoardingMessage: true,
+          disembarkedTicketIds: disemb1,
+          refusedTicketIds: refused1,
+          tickets: ticketsBox.values.toList(),
+        ));
+      } else {
+        emit(cur.copyWith(
+          boardingSuccess: false,
+          boardingMessage: boardingResult.message,
+          tickets: ticketsBox.values.toList(),
+        ));
       }
-
-      final cur2 = state as BoardingsListState;
-      emit(cur2.copyWith(
-        boardingSuccess: boardingResult.success,
-        tickets: ticketsBox.values.toList(),
-        error: boardingResult.message,
-      ));
     } catch (e) {
       final curErr = state as BoardingsListState;
       emit(curErr.copyWith(
-        error: e.toString(),
         boardingSuccess: false,
+        boardingMessage: e.toString(),
         tickets: ticketsBox.values.toList(),
       ));
     }
@@ -362,53 +435,48 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     Emitter<BoardingsState> emit,
   ) async {
     if (state is! BoardingsListState) return;
+    final cur = state as BoardingsListState;
 
-    // 1) Оптимистично: снять посадку
-    final t0 = ticketsBox.get(event.model.orderNumber);
-    if (t0 != null) {
-      await ticketsBox.put(
-        event.model.orderNumber,
-        t0.copyWith(boardingPassed: false, isSendToServer: false),
-      );
-    }
-
-    // 2) Локальные наборы
-    final cur1 = state as BoardingsListState;
-    final refused1 = Set<String>.from(cur1.refusedTicketIds)
-      ..add(event.model.orderNumber);
-    final disemb1 = Set<String>.from(cur1.disembarkedTicketIds)
-      ..remove(event.model.orderNumber);
-    emit(cur1.copyWith(
-      refusedTicketIds: refused1,
-      disembarkedTicketIds: disemb1,
-    ));
-
-    // 3) Бэк → флаг sync
     try {
+      final hasNet = await NetworkUtils.isNetworkAvailable();
       final boardingResult = await repository.denyBoarding(event.model);
-
       final savedModel =
-          await repository.searchTicketsByOrderNumber(event.model.orderNumber);
-      final t1 = ticketsBox.get(event.model.orderNumber);
-      if (t1 != null) {
-        final base = savedModel ?? t1;
-        final updated = base.copyWith(
-          isSendToServer: boardingResult.success,
-        );
-        await ticketsBox.put(event.model.orderNumber, updated);
-      }
+          await _fetchSavedTicketIfOnline(event.model.orderNumber);
+      final t0 = ticketsBox.get(event.model.orderNumber);
 
-      final cur2 = state as BoardingsListState;
-      emit(cur2.copyWith(
-        boardingSuccess: boardingResult.success,
-        tickets: ticketsBox.values.toList(),
-        error: boardingResult.message,
-      ));
+      if (boardingResult.success) {
+        if (t0 != null) {
+          final base = savedModel ?? t0;
+          await ticketsBox.put(
+            event.model.orderNumber,
+            base.copyWith(boardingPassed: false, isSendToServer: hasNet),
+          );
+        }
+
+        final refused1 = Set<String>.from(cur.refusedTicketIds)
+          ..add(event.model.orderNumber);
+        final disemb1 = Set<String>.from(cur.disembarkedTicketIds)
+          ..remove(event.model.orderNumber);
+
+        emit(cur.copyWith(
+          boardingSuccess: true,
+          clearBoardingMessage: true,
+          refusedTicketIds: refused1,
+          disembarkedTicketIds: disemb1,
+          tickets: ticketsBox.values.toList(),
+        ));
+      } else {
+        emit(cur.copyWith(
+          boardingSuccess: false,
+          boardingMessage: boardingResult.message,
+          tickets: ticketsBox.values.toList(),
+        ));
+      }
     } catch (e) {
       final curErr = state as BoardingsListState;
       emit(curErr.copyWith(
-        error: e.toString(),
         boardingSuccess: false,
+        boardingMessage: e.toString(),
         tickets: ticketsBox.values.toList(),
       ));
     }
@@ -420,7 +488,7 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
   ) {
     if (state is! BoardingsListState) return;
     final s = state as BoardingsListState;
-    emit(s.copyWith(boardingSuccess: null));
+    emit(s.copyWith(boardingSuccess: null, clearBoardingMessage: true));
   }
 
   // -------------- Legacy redirect --------------
@@ -445,13 +513,14 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
 
     // Быстрая загрузка по ключу истории — берём кеш и СЛИВАЕМ с локальными флагами
     if (event.historyKey != null && cacheBox.containsKey(event.historyKey)) {
-      final raw = cacheBox.get(event.historyKey);
-      final savedTickets = (raw as List).cast<TicketModel>();
+      _currentCacheKey = event.historyKey;
+      final savedTickets = _readTicketsFromCache(event.historyKey) ?? const [];
 
       final merged = _mergeWithLocal(savedTickets);
 
       await ticketsBox.clear();
       await ticketsBox.putAll({for (final e in merged) e.orderNumber: e});
+      await _syncCurrentCache(merged);
 
       emit(s.copyWith(
         tickets: merged,
@@ -468,7 +537,12 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
       final trainNumber = event.searchModel['trainAsuName'] ?? '';
       String? stationCode = event.searchModel['stationCode'] as String?;
       final stationName = (event.searchModel['stationName'] ?? '') as String;
-      if (stationCode == null) {
+      if (stationCode == null || stationCode.isEmpty) {
+        stationCode =
+            Hive.box<String>('station_codes').get(stationName.trim().toLowerCase());
+      }
+      final hasNet = await NetworkUtils.isNetworkAvailable();
+      if ((stationCode == null || stationCode.isEmpty) && hasNet) {
         stationCode =
             await stationsRepository.searchSspdStationCode(stationName);
       }
@@ -497,9 +571,9 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
         departure: departureStr,
         startStationCode: stationCode ?? '',
       );
+      _currentCacheKey = key;
 
       List<TicketModel> result = const [];
-      final hasNet = await NetworkUtils.hasConnection();
 
       if (hasNet) {
         try {
@@ -518,13 +592,13 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
             });
           }
 
-          // Сохраним историю + кеш (в кеш кладём "сырые" server tickets)
+          // Сохраним историю + кеш (с учётом локальных флагов посадки)
           await _saveHistoryAndCache(
             trainStr: trainNumber,
             stationName: event.searchModel['stationName'],
             departureStr: departureStr,
             stationCode: stationCode,
-            tickets: result,
+            tickets: merged,
           );
 
           // Обновим состояние (включая историю)
@@ -621,9 +695,8 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     if (state is! BoardingsListState) return;
     final s = state as BoardingsListState;
 
-    final cached =
-        (cacheBox.get(event.entry.key) as List?)?.cast<TicketModel>() ??
-            const <TicketModel>[];
+    _currentCacheKey = event.entry.key;
+    final cached = _readTicketsFromCache(event.entry.key) ?? const <TicketModel>[];
     if (cached.isEmpty) {
       emit(s.copyWith(
         tickets: const [],
@@ -643,6 +716,7 @@ class BoardingsListBloc extends Bloc<BoardingsListEvent, BoardingsState> {
     await ticketsBox.putAll({
       for (final e in merged) e.orderNumber: e,
     });
+    await _syncCurrentCache(merged);
 
     emit(s.copyWith(
       tickets: merged,

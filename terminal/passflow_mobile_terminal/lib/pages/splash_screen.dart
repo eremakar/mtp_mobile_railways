@@ -49,14 +49,12 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     } else {
       if (!mounted) return;
+      await NetworkUtils.setForceOffline(false);
       _navigateTo(const MainScaffold());
     }
   }
 
   Future<void> _checkConnectionAndInit() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-
     try {
       final result = await NetworkUtils.hasConnection();
       if (result) {
@@ -65,36 +63,11 @@ class _SplashScreenState extends State<SplashScreen> {
           if (mounted) _initLogic();
         });
       } else {
-        // Нет сети, проверяем токен
-        if (token == null) {
-          // Нет токена — сразу в логин
-          if (mounted) {
-            _navigateTo(
-              BlocProvider(
-                create: (_) => AuthBloc()..add(AppStarted()),
-                child: const LoginPage(),
-              ),
-            );
-          }
-        } else {
-          // Есть токен — показываем оффлайн экран
-          setState(() => _isOffline = true);
-        }
+        // Нет сети — экран выбора офлайн-режима
+        if (mounted) setState(() => _isOffline = true);
       }
     } on SocketException catch (_) {
-      // Аналогично — если нет сети
-      if (token == null) {
-        if (mounted) {
-          _navigateTo(
-            BlocProvider(
-              create: (_) => AuthBloc()..add(AppStarted()),
-              child: const LoginPage(),
-            ),
-          );
-        }
-      } else {
-        setState(() => _isOffline = true);
-      }
+      if (mounted) setState(() => _isOffline = true);
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:passflow_app/auth/auth_provider.dart';
+import 'package:passflow_app/auth/logout_flow.dart';
 import 'package:passflow_app/core/services/language_service.dart';
 import 'package:passflow_app/l10n/app_localizations.dart';
 import 'package:passflow_app/main.dart';
@@ -212,54 +212,7 @@ class _TerminalSettingsPageState extends State<TerminalSettingsPage> {
           const SizedBox(height: 28),
           Center(
             child: TextButton(
-              onPressed: () async {
-                // Use a stable outer context for the dialog
-                final outer = navigatorKey.currentContext ?? context;
-
-                final confirmed = await showDialog<bool>(
-                      context: outer,
-                      barrierDismissible: true,
-                      barrierColor: const Color(0x99000000),
-                      builder: (ctx) => const _LogoutConfirmDialog(),
-                    ) ??
-                    false;
-
-                if (!confirmed) return;
-
-                // 1) Clear auth-related storage
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove('token');
-                await prefs.remove('auth_token');
-                await prefs.remove('refresh_token');
-                await prefs.remove('user_profile');
-
-                // 2) Update provider state using a safe/global context
-                final providerContext = navigatorKey.currentContext ?? context;
-                if (providerContext.mounted) {
-                  providerContext.read<UserProvider>().setLoggedIn(false);
-                }
-
-                // 3) Navigate to auth with robust fallback
-                final langCode =
-                    context.read<LanguageService>().currentLocale.languageCode;
-                final nav = navigatorKey.currentState;
-
-                bool pushed = false;
-                try {
-                  nav?.pushNamedAndRemoveUntil('/auth', (route) => false);
-                  pushed = true;
-                } catch (_) {
-                  pushed = false;
-                }
-
-                if (!pushed && nav != null) {
-                  nav.pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (_) => SplashScreen(languageCode: langCode)),
-                    (route) => false,
-                  );
-                }
-              },
+              onPressed: () => confirmAndLogout(context),
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF6B7280),
                 textStyle:
@@ -327,106 +280,6 @@ class _Item extends StatelessWidget {
               ),
             ),
             const Icon(CupertinoIcons.right_chevron, color: Color(0xFF9CA3AF)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LogoutConfirmDialog extends StatelessWidget {
-  const _LogoutConfirmDialog({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    const titleStyle = TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w800,
-      color: Color(0xFF111827),
-    );
-    const descStyle = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: Color(0xFF6B7280),
-      height: 1.35,
-    );
-
-    return Dialog(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Top icon in soft circle
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Color(0x0F111827),
-                      blurRadius: 10,
-                      offset: Offset(0, 4)),
-                ],
-              ),
-              alignment: Alignment.center,
-              child:
-                  const Icon(Icons.logout, size: 32, color: Color(0xFF111827)),
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.logoutDialogTitle,
-                style: titleStyle, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(
-              l10n.logoutDialogMessage,
-              style: descStyle,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                          color: Color(0xFF9CA3AF), width: 1.2),
-                      foregroundColor: const Color(0xFF111827),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w800),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text(l10n.cancel),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 103, 150, 246),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w800),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(l10n.confirmLogout),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

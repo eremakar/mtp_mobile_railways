@@ -452,6 +452,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Нет соединения с интернетом. Доступен оффлайн-режим.';
 
   @override
+  String get offline_mode => 'Офлайн режим';
+
+  @override
+  String get offline_mode_active =>
+      'Данные сохраняются локально и отправятся при выходе из офлайн-режима';
+
+  @override
   String get choose_action => 'Выберите действие';
 
   @override

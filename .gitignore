@@ -27,3 +27,5 @@
 **/*.iml
 .DS_Store
 **/.DS_Store
+keys/key.properties
+keys/my-release-key.jks

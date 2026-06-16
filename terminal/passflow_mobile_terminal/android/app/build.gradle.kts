@@ -3,8 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -13,8 +12,9 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    val keysDir = rootProject.file("../../../keys")
     val keystoreProperties = Properties()
-    val keystorePropertiesFile = rootProject.file("key.properties")
+    val keystorePropertiesFile = File(keysDir, "key.properties")
     val hasReleaseKeystore = keystorePropertiesFile.exists()
     if (hasReleaseKeystore) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -25,7 +25,7 @@ android {
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storeFile = File(keysDir, keystoreProperties["storeFile"] as String)
                 storePassword = keystoreProperties["storePassword"] as String
                 enableV1Signing = true
                 enableV2Signing = true
@@ -41,10 +41,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -71,6 +67,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
 }
 
 

@@ -22,6 +22,9 @@ class BoardingsListState extends BoardingsState {
   /// null — ничего, true — успех, false — ошибка (последняя операция)
   final bool? boardingSuccess;
 
+  /// Текст ошибки последней операции посадки (для баннера)
+  final String? boardingMessage;
+
   /// Локальные статусы (UI-метки)
   final Set<String> refusedTicketIds;
   final Set<String> disembarkedTicketIds;
@@ -37,6 +40,7 @@ class BoardingsListState extends BoardingsState {
     this.offset = 0,
     this.hasMore = true,
     this.boardingSuccess,
+    this.boardingMessage,
     this.refusedTicketIds = const {},
     this.disembarkedTicketIds = const {},
     // this.stations,
@@ -55,6 +59,8 @@ class BoardingsListState extends BoardingsState {
       bool? hasMore,
       bool clearError = false,
       bool? boardingSuccess,
+      String? boardingMessage,
+      bool clearBoardingMessage = false,
       Set<String>? refusedTicketIds,
       Set<String>? disembarkedTicketIds,
       String? startTime,
@@ -66,6 +72,8 @@ class BoardingsListState extends BoardingsState {
       offset: offset ?? this.offset,
       hasMore: hasMore ?? this.hasMore,
       boardingSuccess: boardingSuccess,
+      boardingMessage:
+          clearBoardingMessage ? null : (boardingMessage ?? this.boardingMessage),
       refusedTicketIds: refusedTicketIds ?? this.refusedTicketIds,
       disembarkedTicketIds: disembarkedTicketIds ?? this.disembarkedTicketIds,
       // stations: stations ?? this.stations,
@@ -83,6 +91,7 @@ class BoardingsListState extends BoardingsState {
         offset,
         hasMore,
         boardingSuccess,
+        boardingMessage,
         refusedTicketIds,
         disembarkedTicketIds,
         // stations,

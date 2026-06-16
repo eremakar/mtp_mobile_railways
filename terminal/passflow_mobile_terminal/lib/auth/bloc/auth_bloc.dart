@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:passflow_app/auth/auth_service.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 import 'package:passflow_app/core/dio/dio_client.dart';
 import 'package:passflow_app/core/services/task_hive_service.dart';
 import 'package:passflow_app/data/models/user_model.dart';
@@ -67,6 +68,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_name', userName);
+        if (filialId != null && filialId > 0) {
+          await prefs.setInt('last_filial_id', filialId);
+        }
+        await NetworkUtils.setForceOffline(false);
 
         await HiveService.initAllHive(force: true);
 

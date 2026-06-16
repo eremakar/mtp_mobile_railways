@@ -86,6 +86,22 @@ class TaskRouteScreen extends StatelessWidget {
                   if (state is RouteSheetLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is RouteSheetLoaded) {
+                    if (state.routeSheets.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            _emptyRouteSheetsMessage(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
                     final activeRoutes = state.routeSheets
                         .where((x) => x.routeSheetState != "Approved")
                         .toList();
@@ -132,6 +148,16 @@ class TaskRouteScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static String _emptyRouteSheetsMessage() {
+    final now = DateTime.now();
+    final yesterday = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 1));
+    final today = DateTime(now.year, now.month, now.day);
+    final fmt = DateFormat('dd.MM.yyyy');
+    return 'На период ${fmt.format(yesterday)}-${fmt.format(today)} нет маршрутных листов. '
+        'Вы не назначены ни в один маршрутный лист.';
   }
 
   static const _sectionTitleStyle = TextStyle(

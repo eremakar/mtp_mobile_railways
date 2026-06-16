@@ -3,19 +3,19 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-/// Логирует полный URL, тело запроса и ответ (только в debug).
+/// Логирует URL, тело запроса и ответ (только в debug, с усечением).
 class ApiLogInterceptor extends Interceptor {
   static const _encoder = JsonEncoder.withIndent('  ');
-  static const _maxRequestBodyLogLength = 1000;
+  static const _maxBodyLogLength = 1000;
 
-  static String _truncateRequestBody(String text) {
-    if (text.length <= _maxRequestBodyLogLength) return text;
-    return '${text.substring(0, _maxRequestBodyLogLength)}… '
+  static String _truncate(String text) {
+    if (text.length <= _maxBodyLogLength) return text;
+    return '${text.substring(0, _maxBodyLogLength)}… '
         '[truncated, ${text.length} chars total]';
   }
 
-  static String _formatRequestBody(dynamic value) {
-    return _truncateRequestBody(_format(value));
+  static String _formatBody(dynamic value) {
+    return _truncate(_format(value));
   }
 
   static String _format(dynamic value) {
@@ -36,7 +36,7 @@ class ApiLogInterceptor extends Interceptor {
     debugPrint('── HTTP REQUEST ──────────────────────────────');
     debugPrint('${options.method} ${options.uri}');
     if (options.data != null) {
-      debugPrint('body:\n${_formatRequestBody(options.data)}');
+      debugPrint('body:\n${_formatBody(options.data)}');
     }
     handler.next(options);
   }
@@ -47,7 +47,7 @@ class ApiLogInterceptor extends Interceptor {
     debugPrint(
       '${response.statusCode} ${response.requestOptions.method} ${response.requestOptions.uri}',
     );
-    debugPrint('body:\n${_format(response.data)}');
+    debugPrint('body:\n${_formatBody(response.data)}');
     handler.next(response);
   }
 
@@ -58,10 +58,10 @@ class ApiLogInterceptor extends Interceptor {
       '${err.response?.statusCode ?? "?"} ${err.requestOptions.method} ${err.requestOptions.uri}',
     );
     if (err.requestOptions.data != null) {
-      debugPrint('request body:\n${_formatRequestBody(err.requestOptions.data)}');
+      debugPrint('request body:\n${_formatBody(err.requestOptions.data)}');
     }
     if (err.response?.data != null) {
-      debugPrint('response body:\n${_format(err.response?.data)}');
+      debugPrint('response body:\n${_formatBody(err.response?.data)}');
     } else {
       debugPrint('message: ${err.message}');
     }

@@ -2,8 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:passflow_app/core/dio/dio_client.dart';
 import 'package:passflow_app/data/models/train_directions_response.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 
 class TrainDirectionsRepository {
+  TrainDirectionsResponse? _anyCached(
+      Box<TrainDirectionsResponse> box) {
+    for (final key in box.keys) {
+      final value = box.get(key);
+      if (value != null && value.result.isNotEmpty) return value;
+    }
+    return null;
+  }
+
   Future<TrainDirectionsResponse?> searchByFilial({
     required int filialId,
   }) async {
@@ -18,6 +28,14 @@ class TrainDirectionsRepository {
 
     final trainDirectionBox =
         Hive.box<TrainDirectionsResponse>('train_directions');
+    var cached = trainDirectionBox.get(filialId);
+    cached ??= _anyCached(trainDirectionBox);
+
+    final hasNet = await NetworkUtils.isNetworkAvailable();
+    if (!hasNet) {
+      return cached ?? _anyCached(trainDirectionBox);
+    }
+
     try {
       final response = await DioClient.dio
           .post('/api/v1/trainDirections/search', data: body);
@@ -34,11 +52,9 @@ class TrainDirectionsRepository {
         }
       }
       // Если статус не 200, попытаться вернуть кешированное значение
-      final cached = trainDirectionBox.get(filialId);
-      return cached;
+      return cached ?? _anyCached(trainDirectionBox);
     } catch (e) {
-      final cached = trainDirectionBox.get(filialId);
-      return cached;
+      return cached ?? _anyCached(trainDirectionBox);
     }
   }
 }

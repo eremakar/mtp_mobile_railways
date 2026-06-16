@@ -1,8 +1,29 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NetworkUtils {
+  static const _forceOfflineKey = 'force_offline_mode';
+  static bool forceOffline = false;
+
+  static Future<void> loadOfflineMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    forceOffline = prefs.getBool(_forceOfflineKey) ?? false;
+  }
+
+  static Future<void> setForceOffline(bool value) async {
+    forceOffline = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_forceOfflineKey, value);
+  }
+
+  /// Учитывает принудительный офлайн-режим приложения.
+  static Future<bool> isNetworkAvailable() async {
+    if (forceOffline) return false;
+    return hasConnection();
+  }
+
   static Future<bool> hasConnection({
     Duration timeout = const Duration(seconds: 3),
     int maxAttempts = 2,

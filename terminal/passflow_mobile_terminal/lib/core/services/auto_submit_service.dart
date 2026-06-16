@@ -139,7 +139,7 @@ class AutoSubmitService {
     }
 
     try {
-      final online = await NetworkUtils.hasConnection();
+      final online = await NetworkUtils.isNetworkAvailable();
 
       if (online) {
         form.tasks = taskModelsToSend;

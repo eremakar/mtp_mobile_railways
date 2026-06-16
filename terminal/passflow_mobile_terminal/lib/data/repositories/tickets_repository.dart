@@ -9,6 +9,7 @@ import 'package:passflow_app/data/models/boarding_model.dart';
 import 'package:passflow_app/data/models/ticket_model.dart';
 import 'package:passflow_app/data/repositories/class_stations_repo.dart';
 import 'package:passflow_app/helpers/parse_helper.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 
 // Возвращаемая структура: список билетов + общее количество (total)
 class TicketsSearchResult {
@@ -34,12 +35,35 @@ String _opField(BoardingOp op) {
 BoardingOp _opFromString(String? value) {
   switch (value) {
     case 'passUnReg':
+    case 'passUnreg':
       return BoardingOp.passUnReg;
     case 'passDeny':
       return BoardingOp.passDeny;
     default:
       return BoardingOp.passReg;
   }
+}
+
+List<String> _responseSectionKeys(BoardingOp op) {
+  switch (op) {
+    case BoardingOp.passReg:
+      return const ['passReg'];
+    case BoardingOp.passUnReg:
+      return const ['passUnReg', 'passUnreg'];
+    case BoardingOp.passDeny:
+      return const ['passDeny'];
+  }
+}
+
+Map<String, dynamic>? _responseSection(
+  Map<String, dynamic> data,
+  BoardingOp op,
+) {
+  for (final key in _responseSectionKeys(op)) {
+    final section = data[key];
+    if (section is Map<String, dynamic>) return section;
+  }
+  return null;
 }
 
 class TicketsRepository {
@@ -276,7 +300,7 @@ class TicketsRepository {
 
     try {
       final response = await DioClient.dio.post(
-        '/api/v1/sspd/boardingPass',
+        '/sspd/api/v1/sspd/boardingPass',
         data: json.encode(payload),
       );
 
@@ -291,7 +315,7 @@ class TicketsRepository {
           ? json.decode(response.data as String) as Map<String, dynamic>
           : (response.data as Map<String, dynamic>? ?? const {});
 
-      final section = data[_opField(op)] as Map<String, dynamic>?;
+      final section = _responseSection(data, op);
       final passes = (section?['boardingPasses'] as List<dynamic>? ?? [])
           .cast<Map<String, dynamic>>();
 
@@ -299,6 +323,14 @@ class TicketsRepository {
         (e) => (e['number']?.toString() ?? '') == model.orderNumber,
         orElse: () => const <String, dynamic>{},
       );
+
+      if (item.isEmpty) {
+        return BoardingResult(
+          success: false,
+          message:
+              'Ответ ССПД не содержит данных по билету ${model.orderNumber}',
+        );
+      }
 
       final kop = int.tryParse(item['kop']?.toString() ?? '') ?? 1;
       final statusStr = item['status']?.toString();
@@ -309,7 +341,7 @@ class TicketsRepository {
 
       return BoardingResult(
         success: false,
-        message: statusText(statusStr),
+        message: _boardingFailureMessage(statusStr, kop),
       );
     } catch (e) {
       return BoardingResult(success: false, message: e.toString());
@@ -322,24 +354,27 @@ class TicketsRepository {
     final ticketsBox = Hive.box<TicketModel>('tickets');
     final key = '${_opField(op)}:${model.orderNumber}';
 
-    final storedTicket = ticketsBox.get(model.orderNumber);
-    final pendingTicket =
-        (storedTicket ?? model).copyWith(isSendToServer: false);
-    await ticketsBox.put(model.orderNumber, pendingTicket);
-
     await box.put(
       key,
       json.encode({'op': _opField(op), 'ticket': model.toJson()}),
     );
 
+    final hasNet = await NetworkUtils.isNetworkAvailable();
+    if (!hasNet) {
+      return BoardingResult(success: true);
+    }
+
     final result = await _submitBoardingRequest(model, op);
 
     if (result.success) {
       await box.delete(key);
-      await ticketsBox.put(
-        model.orderNumber,
-        (storedTicket ?? model).copyWith(isSendToServer: true),
-      );
+      final storedTicket = ticketsBox.get(model.orderNumber);
+      if (storedTicket != null) {
+        await ticketsBox.put(
+          model.orderNumber,
+          storedTicket.copyWith(isSendToServer: true),
+        );
+      }
     } else {
       print(
         '⚠️ Не удалось отправить посадку ${model.orderNumber}: ${result.message ?? ''}',
@@ -359,11 +394,26 @@ class TicketsRepository {
       _sendBoardingOp(model, BoardingOp.passDeny);
 
   /// Нормализуем код: убираем пробелы, приводим к верхнему регистру,
-  /// и заменяем кириллическую 'С' на латинскую 'C' (часто путают).
+  /// заменяем кириллицу на латиницу (ССПД часто шлёт «А», «С» и т.д.).
   String _normStatusCode(String? code) {
     if (code == null) return '';
-    final s = code.trim().toUpperCase().replaceAll('С', 'C');
-    return s;
+    return code
+        .trim()
+        .toUpperCase()
+        .replaceAll('А', 'A')
+        .replaceAll('В', 'B')
+        .replaceAll('С', 'C')
+        .replaceAll('Д', 'D')
+        .replaceAll('Е', 'E');
+  }
+
+  String _boardingFailureMessage(String? statusStr, int kop) {
+    final code = statusStr?.trim();
+    final text = statusText(statusStr);
+    if (code != null && code.isNotEmpty) {
+      return '$text (код: $code, kop: $kop)';
+    }
+    return 'Операция не выполнена (kop: $kop)';
   }
 
   /// Человекочитаемый текст по статус-коду из ответа ССПД

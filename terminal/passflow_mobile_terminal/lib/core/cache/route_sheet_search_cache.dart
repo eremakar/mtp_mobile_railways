@@ -19,6 +19,8 @@ class RouteSheetSearchCache {
     _store[key] = _CacheEntry(value, DateTime.now());
   }
 
+  static void remove(String key) => _store.remove(key);
+
   static void invalidate() => _store.clear();
 }
 

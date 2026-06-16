@@ -106,24 +106,14 @@ class CustomBottomNavBar extends StatelessWidget {
                 index: 0,
               ),
               _buildNavItem(
-                svgAsset: ImageConstant.payment,
-                label: l10n.payment,
-                index: 1,
-              ),
-              _buildNavItem(
-                svgAsset: ImageConstant.train_i,
-                label: l10n.services,
-                index: 2,
-              ),
-              _buildNavItem(
                 svgAsset: ImageConstant.receipt,
                 label: l10n.boarding,
-                index: 3,
+                index: 1,
               ),
               _buildNavItem(
                 svgAsset: ImageConstant.menu,
                 label: l10n.menu,
-                index: 4,
+                index: 2,
               ),
             ],
           ),

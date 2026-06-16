@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:passflow_app/widgets/page/main_scaffold/main_scaffold.dart';
 import 'package:passflow_app/data/models/boarding_model.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 
 class OfflineScreen extends StatelessWidget {
   final VoidCallback onContinue;
@@ -70,7 +71,8 @@ class OfflineScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(40),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          await NetworkUtils.setForceOffline(true);
                           final offlineModel = TicketsSearchModel(
                               departure: DateTime.now().toIso8601String(),
                               train: 'offline',

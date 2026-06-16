@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:passflow_app/auth/bloc/auth_bloc.dart';
-import 'package:passflow_app/core/services/language_service.dart';
 import 'package:passflow_app/auth/auth_provider.dart';
+import 'package:passflow_app/utils/network_utils.dart';
 import 'package:passflow_app/widgets/page/main_scaffold/main_scaffold.dart';
 
 class LoginPage extends StatefulWidget {
@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           if (mounted) setState(() { _isLoading = false; _errorMessage = state.message; });
         } else if (state is AuthLoginSucceeded) {
           if (!mounted) return;
+          await NetworkUtils.setForceOffline(false);
           setState(() { _isLoading = false; });
 
           // Update provider with stored userName if available
@@ -145,20 +146,20 @@ class _LoginPageState extends State<LoginPage> {
                                 const Text(
                                   'Для авторизации введите\nлогин и пароль',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18, color: Colors.black87),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black87),
                                 ),
                                 const SizedBox(height: 32),
-
                                 _buildTextField(
                                   controller: _loginCtrl,
                                   hint: 'Логин',
                                   textInputAction: TextInputAction.next,
-                                  validator: (v) => (v == null || v.trim().isEmpty)
-                                      ? 'Введите логин'
-                                      : null,
+                                  validator: (v) =>
+                                      (v == null || v.trim().isEmpty)
+                                          ? 'Введите логин'
+                                          : null,
                                 ),
                                 const SizedBox(height: 16),
-
                                 _buildTextField(
                                   controller: _passCtrl,
                                   hint: 'Пароль',
@@ -169,13 +170,12 @@ class _LoginPageState extends State<LoginPage> {
                                       ? 'Введите пароль'
                                       : null,
                                 ),
-
                                 const SizedBox(height: 48),
-
                                 SizedBox(
                                   height: 56,
                                   child: ElevatedButton(
-                                    onPressed: _isLoading ? null : _handleLogin,
+                                    onPressed:
+                                        _isLoading ? null : _handleLogin,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue.shade700,
                                       shape: RoundedRectangleBorder(
@@ -192,16 +192,15 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-
                                 if (_errorMessage != null) ...[
                                   const SizedBox(height: 16),
                                   Text(
                                     _errorMessage!,
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(color: Colors.red),
+                                    style:
+                                        const TextStyle(color: Colors.red),
                                   ),
                                 ],
-
                                 const SizedBox(height: 24),
                               ],
                             ),

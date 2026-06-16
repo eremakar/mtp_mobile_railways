@@ -6,6 +6,7 @@ import 'package:passflow_app/pages/boardings_list/boarding_page_screen.dart';
 import 'package:passflow_app/pages/route_sheet/screen/task_route.dart';
 import 'package:passflow_app/data/models/boarding_model.dart';
 import 'package:passflow_app/widgets/bottom_nagivation.dart';
+import 'package:passflow_app/widgets/offline_mode_banner.dart';
 import 'package:passflow_app/widgets/page/Equipment/equipment_fiu11.dart';
 import 'package:passflow_app/widgets/page/Services_Carriage/sanitary_condition.dart';
 import 'package:passflow_app/widgets/page/Services_Carriage/services_carriage_start.dart';
@@ -16,7 +17,6 @@ import 'package:passflow_app/widgets/page/insigned_home.dart';
 import 'package:passflow_app/widgets/page/lu72/lu72_linen_delivery.dart';
 import 'package:passflow_app/widgets/page/main_scaffold/dialogs/main_scaffold_dialogs.dart';
 import 'package:passflow_app/widgets/page/menu.dart';
-import 'package:passflow_app/widgets/page/payment.dart';
 import 'package:passflow_app/widgets/page/select_wagon.dart';
 import 'package:passflow_app/widgets/page/vu8/vu8_remarks.dart';
 import 'package:passflow_app/data/repositories/vu8_repository.dart';
@@ -57,8 +57,6 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   final List<String> _tabs = [
     '/main',
-    '/payment',
-    '/services',
     '/boarding',
     '/menu',
   ];
@@ -71,8 +69,6 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   Widget _buildPage(String name, {Object? args}) {
     switch (name) {
-      case '/payment':
-        return const PaymentAcceptPage();
       case '/services':
         return WagonServicesPage(
           wagonId: (user?.wagonNumber is int)
@@ -204,7 +200,11 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Navigator(
+      body: Column(
+        children: [
+          const OfflineModeBanner(),
+          Expanded(
+            child: Navigator(
         key: _navigatorKey,
         onGenerateInitialRoutes: (navigator, initialRoute) => [
           PageRouteBuilder(
@@ -224,6 +224,9 @@ class _MainScaffoldState extends State<MainScaffold> {
             reverseTransitionDuration: Duration.zero,
           );
         },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
